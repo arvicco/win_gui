@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/fin/!svn/ver/69/gui_testing/trunk/doc/book_code/novite/app/views/parties
+END
+new.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/fin/!svn/ver/69/gui_testing/trunk/doc/book_code/novite/app/views/parties/new.html.erb
+END
+show.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/fin/!svn/ver/69/gui_testing/trunk/doc/book_code/novite/app/views/parties/show.html.erb
+END

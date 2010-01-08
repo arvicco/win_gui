@@ -1,0 +1,44 @@
+<!--
+ ! Excerpted from "Scripted GUI Testing With Ruby",
+ ! published by The Pragmatic Bookshelf.
+ ! Copyrights apply to this code. It may not be used to create training material, 
+ ! courses, books, articles, and the like. Contact us if you are in doubt.
+ ! We make no guarantees that this code is fit for any purpose. 
+ ! Visit http://www.pragmaticprogrammer.com/titles/idgtr for more book information.
+-->
+<html>
+  <head>
+    <title>novite - hassle-free invites</title>
+    <style>
+      body {
+        font-family: "Frutiger", "Univers", "Helvetica Neue", arial, helvetica, sans-serif;
+      }
+
+      ul {
+        list-style-image: none;
+        list-style-type: none;
+        margin-left: 0px;
+        padding-left: 0px;
+      }
+  
+      ul li {
+        margin-bottom: 5px;
+      }
+
+      span.drag {
+        background-color: black;
+        color: white;
+        cursor: move;
+        padding: 1px;
+        font-size: small;
+      }
+    </style>
+  </head>
+  <body>
+    <% if flash[:notice] %> 
+      <div id="party_notice"><%= flash[:notice] %></div> 
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

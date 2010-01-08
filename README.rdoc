@@ -1,6 +1,24 @@
 = win_gui
 
-Description goes here.
+== Description
+
+Welcome to WinGui!
+
+WinGui is a module that defines wrapper methods for multiple Win32API 
+functions (mostly from user32 dll) dealing with GUI manipulation/automation. 
+In addition to straightforward API wrappers, it also defines more Ruby-like
+abstractions and convenience methods for manipulating windows and other GUI 
+elements (such as WinGui::Window class and its methods).
+
+== Documentation
+
+See WinGui and WinGui::Window for documentation
+
+== Examples
+
+require 'win_gui'
+include WinGui
+
 
 == Note on Patches/Pull Requests
  

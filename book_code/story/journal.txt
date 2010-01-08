@@ -1,0 +1,29 @@
+Make sure you install the Selenium gem, with a capital S.
+
+First story.
+
+Add browser code.
+
+./script/generate rspec_scaffold Party name:string description:text location:text begins_at:datetime ends_at:datetime
+
+rake db:migrate
+
+./script/generate migration AddLinkToParty link:string
+
+Edit view.
+
+RESTful with to_param
+
+Make sure date/time updates!!!!
+
+Scenario: email invites
+  Given a blank invitation
+  When I plan a party called "Celebration"
+  And I enter a description of "Good times, come on"
+  And I enter a location of "Right here in Jersey City, NJ"
+  And I enter a starting time of "Sep. 29, 1980, 8 PM"
+  And I enter an ending time of "Sep. 29, 1980, 10 PM"
+  And I enter a recipient address of "example@example.com"
+  Then I should see an email preview
+  When I confirm the email
+  Then I should see a confirmation
