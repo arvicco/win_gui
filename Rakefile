@@ -5,11 +5,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "win_gui"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Rubyesque interfaces and wrappers for Win32 API GUI functions}
+    gem.description = %Q{Rubyesque interfaces and wrappers for Win32 API GUI functions}
     gem.email = "arvitallian@gmail.com"
     gem.homepage = "http://github.com/arvicco/win_gui"
     gem.authors = ["arvicco"]
+    gem.add_dependency "win32-api", ">= 1.4.5"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "cucumber", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings

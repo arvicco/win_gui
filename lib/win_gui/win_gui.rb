@@ -5,7 +5,7 @@ require 'window'
 
 #TODO - When calling API functions, win_handle arg should default to instance var @handle of the host class
 #TODO - Giving a hash of "named args" to def_api, like this:
-#TODO        def_api 'ShowWindow', 'LI' , 'I', :args=>{:handle=>1, :cmd=>2, :command=>2}
+#TODO        def_api 'ShowWindow', 'LI' , 'I', :args=>{1=>:handle=>, 2=>[:cmd, :command]}
 #TODO - Giving a hash of "defaults" to def_api, like this:
 #TODO        def_api 'ShowWindow', 'LI' , 'I', :defaults=>{1=>1234, 2=>'String2'}
 #TODO - Option :class_method should define CLASS method instead of instance
@@ -59,10 +59,10 @@ module WinGui
 
   return_enum_proc = Proc.new do |api, *args, &block|
     raise 'Invalid args count' unless args.size == api.prototype.size-1
+    handles = []
     cb = if block
       callback('LP', 'I', &block)
     else
-      handles = []
       callback('LP', 'I') do |handle, message|
         handles << handle
         true
@@ -207,7 +207,6 @@ module WinGui
     api.call args.first, rectangle
     rectangle.unpack 'l*'
   end
-
 
   def_api 'keybd_event', 'IILL', 'V'
   def_api 'PostMessage', 'LLLL', 'L'

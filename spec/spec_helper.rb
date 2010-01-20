@@ -8,7 +8,7 @@ require 'note'
 module SpecMacros
 
   # wrapper for it method that extracts description from example source code, such as:
-  # its{ use{    function(arg1 = 4, arg2 = 'string')  }}
+  # spec { use{    function(arg1 = 4, arg2 = 'string')  }}
   def spec &block
     it description_from(*block.source_location), &block
   end
@@ -16,7 +16,7 @@ module SpecMacros
   # reads description line from source file and drops external brackets (like its{}, use{}
   def description_from(file, line)
       File.open(file) do |f|
-        f.lines.to_a[line-1].gsub( Regexp.new('(spec.*?{)|(use.*?{)|}'), '' ).lstrip.rstrip
+        f.lines.to_a[line-1].gsub( /(spec.*?{)|(use.*?{)|}/, '' ).strip
       end
   end
 end
@@ -39,7 +39,7 @@ module GuiTest
   TEST_MIN_RECT = [-32000, -32000, -31840, -31976]
   TEST_TEXTAREA_CLASS = 'ATL:00434310'
   TEST_IMPOSSIBLE = 'Impossible'
-  TEST_ERROR_CONVERSION = Regexp.new('Can.t convert')
+  TEST_ERROR_CONVERSION = /Can.t convert/
 
   # Helper methods:
   def use

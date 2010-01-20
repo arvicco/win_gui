@@ -91,20 +91,17 @@ module GuiTest
       end
 
       it 'defined method returns true instead of non-zero' do
-        test_app {|app| window?(app.handle).should == true }
+        window?(any_handle).should == true
       end
 
       it 'defined method returns false instead of zero' do
-        test_app { |app| @app_handle = app.handle }
-        window?(@app_handle).should == false
+        window?(123).should == false
       end
 
       it 'defined method enforces the argument count' do
-        test_app do |app|
-          expect {window?}.to raise_error 'Invalid args count'
-          expect {window?(app.handle, nil)}.to raise_error 'Invalid args count'
-          expect {window?(nil, nil)}.to raise_error 'Invalid args count'
-        end
+        expect {window?}.to raise_error 'Invalid args count'
+        expect {window?(123, nil)}.to raise_error 'Invalid args count'
+        expect {window?(nil, nil)}.to raise_error 'Invalid args count'
       end
     end
 
@@ -678,7 +675,7 @@ module GuiTest
       it 'loops through all children of given window, passing each found window handle and a message to a given block'
     end
 
-    it 'GetForegroundWindow ', 'V', 'L'  
+    it 'GetForegroundWindow ', 'V', 'L'
     it 'GetActiveWindow ', 'V', 'L'
   end
 

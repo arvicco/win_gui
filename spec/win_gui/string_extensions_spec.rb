@@ -29,7 +29,7 @@ module GuiTest
       end
       
       it 'transforms uppercase letters into [shift, equivalent key code]' do
-       ('A'..'Z').each {|char| char.to_vkeys.should == [VK_SHIFT, char.unpack('C')[0]]}
+       ('A'..'Z').each {|char| char.to_vkeys.should == [VK_SHIFT, *char.unpack('C')]}
       end
       
       it 'transforms lowercase letters into [(upcase) key code]' do
@@ -37,11 +37,11 @@ module GuiTest
       end
       
       it 'transforms space into [equivalent key code]' do 
-        " ".to_vkeys.should == ' '.unpack('C')
+        " ".to_vkeys.should == " ".unpack('C')
       end
       
       it 'raises error if char is not implemented punctuation' do
-       ('!'..'/').each {|char| lambda {char.to_vkeys}.should raise_error TEST_ERROR_CONVERSION}
+       ('!'..'/').each {|char| lambda {char.to_vkeys}.should raise_error TEST_ERROR_CONVERSION }
        (':'..'@').each {|char| lambda {char.to_vkeys}.should raise_error TEST_ERROR_CONVERSION }
        ('['..'`').each {|char| lambda {char.to_vkeys}.should raise_error TEST_ERROR_CONVERSION }
        ('{'..'~').each {|char| lambda {char.to_vkeys}.should raise_error TEST_ERROR_CONVERSION }
