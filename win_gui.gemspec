@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{win_gui}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["arvicco"]
-  s.date = %q{2010-01-20}
+  s.date = %q{2010-01-26}
   s.description = %q{Rubyesque interfaces and wrappers for Win32 API GUI functions}
   s.email = %q{arvitallian@gmail.com}
   s.extra_rdoc_files = [
@@ -150,14 +150,6 @@ Gem::Specification.new do |s|
      "book_code/with_rspec/locknote.rb",
      "book_code/with_rspec/note_spec.rb",
      "book_code/with_rspec/should_examples.rb",
-     "exp/exp.rb",
-     "exp/exp_encodings.rb",
-     "exp/exp_enum_windows.rb",
-     "exp/exp_quik.rb",
-     "exp/exp_wsh.rb",
-     "exp/old/windows_basics.rb",
-     "exp/old/wnote.rb",
-     "exp/old/wnote_spec.rb",
      "features/step_definitions/win_gui_steps.rb",
      "features/support/env.rb",
      "features/win_gui.feature",
@@ -170,16 +162,22 @@ Gem::Specification.new do |s|
      "lib/note/win/locknote.rb",
      "lib/win_gui.rb",
      "lib/win_gui/constants.rb",
+     "lib/win_gui/def_api.rb",
      "lib/win_gui/string_extensions.rb",
      "lib/win_gui/win_gui.rb",
      "lib/win_gui/window.rb",
+     "old/windows_basics.rb",
+     "old/wnote.rb",
+     "old/wnote_spec.rb",
      "spec/note/win/locknote_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/test_apps/locknote/LockNote.exe",
+     "spec/win_gui/def_api_spec.rb",
      "spec/win_gui/string_extensions_spec.rb",
      "spec/win_gui/win_gui_spec.rb",
-     "spec/win_gui/window_spec.rb"
+     "spec/win_gui/window_spec.rb",
+     "win_gui.gemspec"
   ]
   s.homepage = %q{http://github.com/arvicco/win_gui}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -189,6 +187,7 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/note/win/locknote_spec.rb",
      "spec/spec_helper.rb",
+     "spec/win_gui/def_api_spec.rb",
      "spec/win_gui/string_extensions_spec.rb",
      "spec/win_gui/window_spec.rb",
      "spec/win_gui/win_gui_spec.rb"
