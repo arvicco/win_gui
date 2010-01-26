@@ -1,22 +1,38 @@
 = win_gui
+    by: Arvicco
+    url: http://github.com/arvicco/git_hub
 
-== Description
+== DESCRIPTION:
 
 Welcome to WinGui!
 
 WinGui is a module that provides convenient wrapper methods for multiple Win32 API
-functions (mostly from user32.dll) dealing with GUI manipulation/automation.
+functions (mostly from user32.dll) dealing with Windows GUI manipulation/automation.
 In addition to straightforward API wrappers, it also defines more Ruby-like
 abstractions and convenience methods for manipulating windows and other GUI 
 elements (such as WinGui::Window class and its methods).
 
 It is still work in progress, only a small number of API functions wrapped so far...
 
-== Documentation
+== DOCUMENTATION:
 
 See WinGui and WinGui::Window for documentation
 
-== Examples
+== REQUIREMENTS:
+
+Only works with Ruby 1.9.1+ since it uses some of the most recent features (block
+arguments given to block, etc...)
+
+== FEATURES/PROBLEMS:
+
+This project is quite new, so it's probably not ready for prime time just yet...
+Contributors always welcome!
+
+== INSTALL:
+
+  $ sudo gem install win_gui
+
+== SYNOPSIS:
 
   require 'win_gui'
   include WinGui
@@ -33,11 +49,11 @@ More examples will follow as the code will be closer to production quality...
   (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-== Credits
+== CREDITS:
 
 This library started as an extension of ideas and code described in excellent book
 "Scripted GUI Testing with Ruby" by Ian Dees.
 
-== Copyright
+== LICENSE:
 
-Copyright (c) 2010 arvicco. See LICENSE for details.
+Copyright (c) 2009 Arvicco. See LICENSE for details

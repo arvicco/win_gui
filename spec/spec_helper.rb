@@ -50,6 +50,10 @@ module GuiTest
     find_window(nil, nil)
   end
 
+  def not_a_handle
+    123
+  end
+
   def any_block
     lambda {|*args| args}
   end

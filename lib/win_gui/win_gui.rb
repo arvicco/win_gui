@@ -1,48 +1,19 @@
 require 'Win32/api'
 require 'string_extensions'
 require 'constants'
+require 'def_api'
 require 'window'
 
-#TODO - When calling API functions, win_handle arg should default to instance var @handle of the host class
-#TODO - Giving a hash of "named args" to def_api, like this:
-#TODO        def_api 'ShowWindow', 'LI' , 'I', :args=>{1=>:handle=>, 2=>[:cmd, :command]}
-#TODO - Giving a hash of "defaults" to def_api, like this:
-#TODO        def_api 'ShowWindow', 'LI' , 'I', :defaults=>{1=>1234, 2=>'String2'}
-#TODO - Option :class_method should define CLASS method instead of instance
+#  TODO - When calling API functions, win_handle arg should default to instance var @handle of the host class
+#  TODO - Giving a hash of "named args" to def_api, like this:
+#  TODO        def_api 'ShowWindow', 'LI' , 'I', :args=>{1=>:handle=>, 2=>[:cmd, :command]}
+#  TODO - Giving a hash of "defaults" to def_api, like this:
+#  TODO        def_api 'ShowWindow', 'LI' , 'I', :defaults=>{1=>1234, 2=>'String2'}
+#  TODO - Option :class_method should define CLASS method instead of instance
 
 module WinGui
-
-  # Class meta-method used to define API wrappers
-  def self.def_api(function, params, returns, options={}, &define_block)
-    name = function.snake_case
-    name.sub!(/^is_/, '') << '?' if name =~ /^is_/
-    boolean = options[:boolean] || name =~ /\?$/ # Boolean function returns true/false instead of nonzero/zero
-    proto = params.respond_to?(:join) ? params.join : params # Converts params into prototype string
-    api = Win32::API.new(function, proto.upcase, returns.upcase, options[:dll] || WG_DLL_DEFAULT)
-
-    define_method(options[:rename] || name) do |*args, &runtime_block|
-      return api if args == [:api]
-      return define_block.call(api, *args, &runtime_block) if define_block
-      raise 'Invalid args count' unless args.size == params.size
-      result = api.call(*args)
-      yield result if runtime_block
-      return result != 0 if boolean
-      return nil if options[:zeronil] && result == 0
-      result
-    end
-  end
-
-  # Converts block into API::Callback object that can be used as API callback argument
-  def self.callback(params, returns, &block)
-    Win32::API::Callback.new(params, returns, &block)
-  end
-
-  # Helper methods:
-  # returns string buffer - used to supply string pointer reference to API functions
-  def self.buffer(size = 1024, code = "\x00")
-    code * size
-  end
-
+  self.extend DefApi
+  
   return_string_proc = lambda do |api, *args|
     raise 'Invalid args count' unless args.size == api.prototype.size-2
     args += [string = buffer, string.length]
@@ -72,23 +43,23 @@ module WinGui
     handles
   end
 
-  # Windows API definitions:
-  def_api 'IsWindow', 'L', 'L'
+  # Windows GUI API definitions:
+
   # Tests whether the specified window handle identifies an existing window.
   #   A thread should not use IsWindow for a window that it did not create because the window could be destroyed after this
   #   function was called. Further, because window handles are recycled the handle could even point to a different window.
+  def_api 'IsWindow', 'L', 'L'
 
-  def_api 'IsWindowVisible', 'L', 'L'
-  alias visible? window_visible?
   # Tests if the specified window, its parent window, its parent's parent window, and so forth, have the WS_VISIBLE style.
   # Because the return value specifies whether the window has the WS_VISIBLE style, it may be true even if the window is totally obscured by other windows.
+  def_api 'IsWindowVisible', 'L', 'L'
+  alias visible? window_visible?
 
   def_api 'IsZoomed', 'L', 'L'
   alias maximized? zoomed?
   # Tests whether the specified window is maximized.
 
-  def_api 'IsIconic', 'L', 'L'
-  alias minimized? iconic?
+  def_api 'IsIconic', 'L', 'L', :alias => :minimized?
   # Tests whether the specified window is maximized.
 
   def_api 'IsChild', 'LL', 'L'
