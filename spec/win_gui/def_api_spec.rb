@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper" )
 
-module GuiTest 
+module GuiTest
 
 #  def enum_callback
 #    @enum_callback ||= WinGui.callback('LP', 'I'){|handle, message| true }
@@ -34,6 +34,15 @@ module GuiTest
         expect { WinGui.def_api 'FindWindowW', ['p', 'P'], 'L' }.to_not raise_error
         expect { find_window_w(nil) }.to raise_error 'Invalid args count'
         expect { find_window_w(nil, nil) }.to_not raise_error 'Invalid args count'
+      end
+
+      it 'overrides standard dll name with :dll option' do
+
+        WinGui.def_api 'GetComputerName', ['P', 'P'], 'I', :dll=> 'kernel32'
+        sys_name = `echo %COMPUTERNAME%`.strip
+        name = " " * 128
+        get_computer_name(name, "128")
+        name.unpack("A*").first.should == sys_name
       end
 
       it 'overrides standard name for defined method with :rename option' do
@@ -155,6 +164,26 @@ module GuiTest
       end
     end
 
+    context 'using DLL other than default user32 with :dll option' do
+      before(:each) do
+        hide_method :get_computer_name # hide original method if it is defined
+        WinGui.def_api 'GetComputerName', ['P', 'P'], 'I', :dll=> 'kernel32'
+      end
+      after(:each) { restore_method :get_computer_name } # restore original method if it was hidden
+
+      it 'defines new instance method with appropriate name' do
+        respond_to?(:get_computer_name).should be_true
+      end
+
+      it 'returns expected result' do
+        WinGui.def_api 'GetComputerName', ['P', 'P'], 'I', :dll=> 'kernel32'
+        hostname = `hostname`.strip.upcase
+        name = " " * 128
+        get_computer_name(name, "128")
+        name.unpack("A*").first.should == hostname
+      end
+    end
+
     context 'trying to define an invalid API function' do
       it 'raises error when trying to define function with a wrong function name' do
         expect { WinGui.def_api 'FindWindowImpossible', 'PP', 'L' }.
@@ -162,7 +191,7 @@ module GuiTest
       end
     end
 
-    context 'defining API function using definition blocks' do
+    context 'defining API function using definition block' do
 
       it 'defines new instance method' do
         WinGui.def_api( 'FindWindowW', 'PP', 'L' ){|api, *args|}
@@ -188,7 +217,7 @@ module GuiTest
         end
         find_window_w(1, 2, 3)
         @args.should == [1, 2, 3]
-        @api.function_name.should == 'FindWindowW' # The name of the function passed to the constructor
+        @api.function_name.should == 'FindWindowW' # The name of the api function passed to the block
       end
 
       it ':rename option overrides standard name for defined method' do
@@ -230,8 +259,8 @@ module GuiTest
 
       it 'created callback object can be used as a valid arg of API function expecting callback' do
         WinGui.def_api 'EnumWindows', 'KP', 'L'
-        @enum_callback ||= WinGui.callback('LP', 'I'){|handle, message| true }
-        expect { enum_windows(@enum_callback, 'Message') }.to_not raise_error
+        @callback = WinGui.callback('LP', 'I'){|handle, message| true }
+        expect { enum_windows(@callback, 'Message') }.to_not raise_error
       end
 
       it 'defined API functions expecting callback recognize/accept blocks' do

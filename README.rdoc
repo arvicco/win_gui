@@ -37,10 +37,15 @@ Contributors always welcome!
   require 'win_gui'
   include WinGui
 
-More examples will follow as the code will be closer to production quality...  
+More examples will follow when the code is closer to production quality...  
+
+== CREDITS:
+
+This library started as an extension of ideas and code described in excellent book
+"Scripted GUI Testing with Ruby" by Ian Dees.
 
 == Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
@@ -48,11 +53,6 @@ More examples will follow as the code will be closer to production quality...
 * Commit, do not mess with rakefile, version, or history.
   (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
-
-== CREDITS:
-
-This library started as an extension of ideas and code described in excellent book
-"Scripted GUI Testing with Ruby" by Ian Dees.
 
 == LICENSE:
 

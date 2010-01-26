@@ -1,7 +1,6 @@
 module WinGui
   
   # WinGui Module internal Constants:
-  WG_DLL_DEFAULT = 'user32'
   WG_KEY_DELAY = 0.00001 
   WG_SLEEP_DELAY = 0.001 
   WG_CLOSE_TIMEOUT = 1
