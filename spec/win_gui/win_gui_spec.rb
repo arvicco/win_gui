@@ -4,9 +4,6 @@ module GuiTest
   describe WinGui, ' contains a set of pre-defined GUI functions' do
     describe '#window?' do
       spec{ use{ window?(handle = 0) }}
-      # Tests whether the specified window handle identifies an existing window.
-      #   A thread should not use IsWindow for a window that it did not create because the window could be destroyed after this 
-      #   function was called. Further, because window handles are recycled the handle could even point to a different window. 
 
       it 'returns true if window exists' do
         test_app do |app|
@@ -28,8 +25,6 @@ module GuiTest
     describe '#window_visible?' do
       spec{ use{ window_visible?(handle = any_handle) }}
       spec{ use{ visible?(handle = any_handle) }}
-      # Tests if the specified window, its parent window, its parent's parent window, and so forth, have the WS_VISIBLE style.
-      # Because the return value specifies whether the window has the WS_VISIBLE style, it may be true even if the window is totally obscured by other windows. 
 
       it 'returns true if window is visible' do
         test_app do |app|

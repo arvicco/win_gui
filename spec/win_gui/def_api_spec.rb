@@ -263,8 +263,10 @@ module GuiTest
         expect { enum_windows(@callback, 'Message') }.to_not raise_error
       end
 
-      it 'defined API functions expecting callback recognize/accept blocks' do
-        pending ' API is not exactly clear atm (what about prototype?)(.with_callback method?)'
+      it 'defined API functions expecting callback convert given block into callback' do
+        pending ' What about prototype!? API is not exactly clear atm (.with_callback method?)'
+        WinGui.def_api 'EnumWindows', 'KP', 'L'
+        expect { enum_windows('Message'){|handle, message| true } }.to_not raise_error
       end
     end
   end
