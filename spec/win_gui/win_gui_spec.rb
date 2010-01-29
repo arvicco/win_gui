@@ -22,7 +22,7 @@ module GuiTest
       end
     end
 
-    describe '#window_visible?' do
+    describe '#window_visible?' do 
       spec{ use{ window_visible?(handle = any_handle) }}
       spec{ use{ visible?(handle = any_handle) }}
 
@@ -199,6 +199,10 @@ module GuiTest
       spec{ use{ text = get_window_text(handle = 0)}}
       # Improved with block to accept window handle as a single arg and return (rstripped) text string 
 
+      it 'returns nil if incorrect window handle given' do
+        get_window_text(0).should == nil
+      end
+
       it 'returns correct window text' do
         test_app {|app| get_window_text(app.handle).should == TEST_WIN_TITLE }
       end
@@ -207,6 +211,10 @@ module GuiTest
     describe '#get_window_text_w' do
       spec{ use{ class_name = get_window_text_w(handle = 0)}} # result encoded as utf-8
       # Unicode version of get_window_text (strings returned encoded as utf-8)
+
+      it 'returns nil if incorrect window handle given' do
+        get_window_text(0).should == nil
+      end
 
       it 'returns correct window text' do
         test_app {|app| get_window_text_w(app.handle).should == TEST_WIN_TITLE }

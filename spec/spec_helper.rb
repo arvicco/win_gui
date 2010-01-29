@@ -1,9 +1,9 @@
-lib_dir = File.join(File.dirname(__FILE__),".." ,"lib" )
+lib_dir = File.join(File.dirname(__FILE__), "..", "lib" )
 $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 require 'spec'
 require 'win_gui'
 require 'note'
-                                        
+
 # Customize RSpec with my own extensions
 module SpecMacros
 
@@ -15,9 +15,9 @@ module SpecMacros
 
   # reads description line from source file and drops external brackets (like its{}, use{}
   def description_from(file, line)
-      File.open(file) do |f|
-        f.lines.to_a[line-1].gsub( /(spec.*?{)|(use.*?{)|}/, '' ).strip
-      end
+    File.open(file) do |f|
+      f.lines.to_a[line-1].gsub( /(spec.*?{)|(use.*?{)|}/, '' ).strip
+    end
   end
 end
 
@@ -45,8 +45,9 @@ module GuiTest
   def use
     lambda {yield}.should_not raise_error
   end
-  
+
   def any_handle
+    WinGui.def_api 'FindWindow', 'PP', 'L' unless respond_to? :find_window
     find_window(nil, nil)
   end
 
@@ -57,48 +58,54 @@ module GuiTest
   def any_block
     lambda {|*args| args}
   end
-  
-  def hide_method(name) # hide original method if it is defined
-    WinGui.module_eval do
-      if method_defined? name.to_sym
-        alias_method "orig_#{name.to_s}".to_sym, name.to_sym
-        remove_method name.to_sym
+
+  def hide_method(*names) # hide original method(s) if it is defined
+    names.each do |name|
+      WinGui.module_eval do
+        if method_defined? name.to_sym
+          alias_method "orig_#{name.to_s}".to_sym, name.to_sym
+          remove_method name.to_sym
+        end
       end
     end
   end
-  
-  def restore_method(name) # restore original method if it was hidden
-    WinGui.module_eval do
-      temp = "orig_#{name.to_s}".to_sym
-      if method_defined? temp
-        alias_method name.to_sym, temp
-        remove_method temp
+
+  def restore_method(*names) # restore original method if it was hidden
+    names.each do |name|
+      WinGui.module_eval do
+        temp = "orig_#{name.to_s}".to_sym
+        if method_defined? temp
+          alias_method name.to_sym, temp
+          remove_method temp
+        end
       end
     end
   end
-  
+
   def launch_test_app
     system TEST_APP_START
     sleep TEST_SLEEP_DELAY until (handle = find_window(nil, TEST_WIN_TITLE))
     @launched_test_app = Window.new handle
   end
-  
+
   def close_test_app(app = @launched_test_app)
     while app and app.respond_to? :handle and find_window(nil, TEST_WIN_TITLE)
       post_message(app.handle, WM_SYSCOMMAND, SC_CLOSE, 0)
       sleep TEST_SLEEP_DELAY
-    end  
+    end
     @launched_test_app = nil
   end
-  
+
   # Creates test app object and yields it back to the block
   def test_app
     app = launch_test_app
+
     def app.textarea #define singleton method retrieving app's text area
       Window.new find_window_ex(self.handle, 0, TEST_TEXTAREA_CLASS, nil)
     end
+
     yield app
-    close_test_app 
+    close_test_app
   end
-  
+
 end

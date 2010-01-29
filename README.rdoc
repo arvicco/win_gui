@@ -14,6 +14,64 @@ elements (such as WinGui::Window class and its methods).
 
 It is still work in progress, only a small number of API functions wrapped so far...
 
+== SUMMARY
+
+So you want to write a simple program that makes some Win32 API function calls.
+You searched MSDN and you know what functions you'll need. Now you just want to
+put those calls into your Ruby code. You'd love it to be a natural extension of
+Ruby code, preferably not turning your code base into a ugly C++ like spaghetty
+of CamelCase calls, String/Array pack/unpack gymnastics, buffer allocations,
+extracting return values from [in/out] parameters and checking return codes for 0.
+You can definitely use excellent 'win32-api' gem by Daniel J. Berger and Park Heesob
+that allows you to define Win32 API objects for any function you can find on MSDN,
+execute calls on them and even define callback objects that some of those API functions expect.
+
+However, this gem will only take you so far. You'll still have to handle (somewhat)
+gory details of argument preparation, mimicking pointers with Strings and stuff.
+For example, consider the amount of code needed to complete a task as simple as
+getting unicode title text for the window that you already have handle for:
+
+  api = Win32::API.new( 'GetWindowTextW', ['L', 'P', 'I'], 'L', 'user32' )
+  buffer = "\x00" * 1024
+  num_chars = api.call( window_handle, buffer, buffer.size)
+  title = if num_chars == 0
+    nil
+  else
+     buffer.force_encoding('utf-16LE').encode('utf-8').rstrip
+  end
+
+Ew, ugly. What about getting information about process id for a known window?
+
+  api = Win32::API.new( 'GetWindowThreadProcessId', ['L', 'P'], 'L' , 'user32' )
+    process_packed = [1].pack('L')
+    thread = api.call(window_handle, process_packed)
+    process = process.unpack('L').first
+
+Wow, packing and unpacking arrays into String to get hold of a simple integer id.
+Just great. Now, wouldn't it be MUCH better if you can just say something like this:
+
+  title = window_text( window_handle)
+  thread, process = window_thread_process_id( window_handle)
+
+What about API functions expecting callbacks? Well, something like this may be nice:
+
+  enum_child_windows( parent_handle, message ){|child_handle, message| puts child_handle }
+
+If you think about it, callbacks are not much than more than code blocks, so let's not
+be afraid to treat them as such. It would be also good if test functions return true/false
+instead of zero/nonzero, find functions return nil if nothing was found etc...
+
+So this is an idea behind WinGui library - make Win32 API functions more fun to use
+and feel more natural inside Ruby code. Following the principle of least surprise, we
+define methods with Rubyesque names (minimized? instead of IsMinimized, etc), minimum
+arguments with sensible defaults, explicit return values and generous use of attached blocks.
+
+Well, we even keep a backup solution for those diehard Win32 API longtimers who would rather
+allocate their buffer strings by hand and mess with obscure return codes. If you use original
+CamelCase method name instead of Rubyesque snake_case one, it will expect those standard
+parameters you know and love from MSDN, return your zeroes instead of nils and support no
+other enhancements. Enjoy!
+
 == DOCUMENTATION:
 
 See WinGui and WinGui::Window for documentation
@@ -25,7 +83,7 @@ arguments given to block, etc...)
 
 == FEATURES/PROBLEMS:
 
-This project is quite new, so it's probably not ready for prime time just yet...
+This project is quite new, so it's may be not suitable for production-quality systems
 Contributors always welcome!
 
 == INSTALL:
