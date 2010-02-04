@@ -33,37 +33,53 @@ module WinGui
     #   :zeronil:: Forces method to return nil if function result is zero
     #
     def def_api(function, params, returns, options={}, &define_block)
+      name, aliases = generate_names(function, options)
+      boolean = options[:boolean]
+      zeronil = options[:zeronil]
+      proto = params.respond_to?(:join) ? params.join : params # Convert params into prototype string
+      api = Win32::API.new(function, proto.upcase, returns.upcase, options[:dll] || DEFAULT_DLL)
+
+      define_method(function) {|*args| api.call(*args)} # define CamelCase method wrapper for api call
+
+      define_method(name) do |*args, &runtime_block|    # define snake_case method with enhanced api
+        return api if args == [:api]
+        return define_block[api, *args, &runtime_block] if define_block
+        WinGui.enforce_count(args, proto)
+        result = api.call(*args)
+        result = runtime_block[result] if runtime_block
+        return result != 0 if boolean         # Boolean function returns true/false instead of nonzero/zero
+        return nil if zeronil && result == 0  # Zeronil function returns nil instead of zero
+        result
+      end
+      aliases.each {|ali| alias_method ali, name }        # define aliases
+    end 
+
+    # Generates name and aliases for defined method based on function name,
+    # sets boolean flag for test functions (Is...)
+    #
+    def generate_names(function, options)
       aliases = ([options[:alias]] + [options[:aliases]]).flatten.compact
       name = options[:rename] || function.snake_case
       case name
         when /^is_/
           aliases << name.sub(/^is_/, '') + '?'
-          boolean = true
+          options[:boolean] = true
         when /^set_/
           aliases << name.sub(/^set_/, '')+ '='
         when /^get_/
           aliases << name.sub(/^get_/, '')
       end
-      boolean ||= options[:boolean]
-      zeronil = options[:zeronil]
-      proto = params.respond_to?(:join) ? params.join : params # Converts params into prototype string
-      api = Win32::API.new(function, proto.upcase, returns.upcase, options[:dll] || DEFAULT_DLL)
+      [name, aliases]
+    end
 
-      define_method(function) {|*args| api.call(*args)} # defines CamelCase method wrapper for api call
-
-      define_method(name) do |*args, &runtime_block|    # defines snake_case method with enhanced api
-        return api if args == [:api]
-        return define_block.call(api, *args, &runtime_block) if define_block
-        unless args.size == params.size
-          raise ArgumentError, "wrong number of parameters: expected #{params.size}, got #{args.size}"
-        end  
-        result = api.call(*args)
-        result = runtime_block[result] if runtime_block
-        return result != 0 if boolean       # Boolean function returns true/false instead of nonzero/zero
-        return nil if zeronil && result == 0
-        result
+    # Ensures that args count is equal to params count plus diff
+    #
+    def enforce_count(args, params, diff = 0)
+      num_args = args.size
+      num_params = params == 'V' ? 0 : params.size + diff
+      if num_args != num_params
+        raise ArgumentError, "wrong number of parameters: expected #{num_params}, got #{num_args}"
       end
-      aliases.each {|ali| alias_method ali, name } unless aliases == []
     end
 
     # Converts block into API::Callback object that can be used as API callback argument
@@ -80,15 +96,19 @@ module WinGui
       code * size
     end
 
+    # Returns array of given args if none of them is zero,
+    # if any arg is zero, returns array of nils
+    #
+    def nonzero_array(*args)
+      args.any?{|arg| arg == 0 } ? args.map{||nil} : args
+    end
+
     # Procedure that returns (possibly encoded) string as a result of api function call
     # or nil if zero characters was returned by api call
     #
     def return_string( encode = nil )
       lambda do |api, *args|
-      num_params = api.prototype.size-2
-      unless args.size == num_params
-        raise ArgumentError, "wrong number of parameters: expected #{num_params}, got #{args.size}"
-      end
+        WinGui.enforce_count( args, api.prototype, -2)
         args += [string = buffer, string.length]
         num_chars = api.call(*args)
         return nil if num_chars == 0
@@ -103,10 +123,7 @@ module WinGui
     #
     def return_enum
       lambda do |api, *args, &block|
-        num_params = api.prototype.size-1
-        unless args.size == num_params
-          raise ArgumentError, "wrong number of parameters: expected #{num_params}, got #{args.size}"
-        end
+        WinGui.enforce_count( args, api.prototype, -1)
         handles = []
         cb = if block
           callback('LP', 'I', &block)
@@ -131,10 +148,9 @@ module WinGui
       lambda do |api, id=0, cmd, &block|
         raise ArgumentError, 'No callback block' unless block
         callback = callback 'IIPPPPPP', 'L', &block
-        id = [id].pack('L')
 
-        status = api.call(id, callback, cmd, 0)
-        [*id.unpack('L'), status]
+        status = api.call(id = [id].pack('L'), callback, cmd, 0)
+        nonzero_array(*id.unpack('L'), status)
       end
     end
 

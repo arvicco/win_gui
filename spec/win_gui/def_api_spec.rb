@@ -13,14 +13,14 @@ module GuiTest
   end
 
   def redefined_methods
-    [:find_window, :is_window, :window?, :enum_windows, :get_computer_name, :computer_name]
+    [:FindWindow, :IsWindow, :EnumWindows, :GetComputerName, :GetForegroundWindow]
   end
 
   def should_count_args(*methods, rights, wrongs)
     rights = [rights].flatten
     wrongs = [wrongs].flatten
     methods.each do |method|
-      (1..8).each do |n|
+      (0..8).each do |n|
         if n == rights.size
           expect {send method, *rights}.to_not raise_error
         else
@@ -299,6 +299,21 @@ module GuiTest
         return_value = find_window(nil, TEST_IMPOSSIBLE) {|result| 0 }
         return_value.should_not == 0
         return_value.should == nil
+      end
+    end
+
+    context 'defining API function without arguments - f(VOID)' do
+      it 'should enforce argument count to 0, NOT 1 (enhanced methods)' do
+        WinGui.def_api 'GetForegroundWindow', 'V', 'L', zeronil: true
+        should_count_args :get_foreground_window, :foreground_window, [], [nil, 0, 123]
+      end
+
+      it 'should NOT enforce argument count (raw method)' do
+        WinGui.def_api 'GetForegroundWindow', 'V', 'L', zeronil: true
+        expect {GetForegroundWindow()}.to_not raise_error
+        expect {GetForegroundWindow(nil)}.to_not raise_error
+        expect {GetForegroundWindow(1,2)}.to_not raise_error
+        expect {GetForegroundWindow(1,2,3)}.to_not raise_error
       end
     end
 

@@ -15,7 +15,6 @@ require 'window'
 module WinGui
   extend DefApi
 
-
   # Windows GUI API definitions:
 
   ##
@@ -78,7 +77,7 @@ module WinGui
   #     title matches the win_title parameter.
   #   win_name (P) - String that specifies the window name (title). If nil, all names match.
   # Return Value (L): found window handle or NIL if nothing found
-
+  #
   # :call-seq:
   #   win_handle = find_window( class_name, win_name )
   #
@@ -107,7 +106,7 @@ module WinGui
   #   win_class (P), win_title (P) - Strings that specify window class and name(title). If nil, anything matches.
   # Returns (L): found child window handle or NIL if nothing found
   #
-  #:call-seq:
+  # :call-seq:
   #   win_handle = find_window_ex( win_handle, after_child, class_name, win_name )
   #
   def_api 'FindWindowEx', 'LLPP', 'L', zeronil: true
@@ -221,7 +220,7 @@ module WinGui
   SW_SHOWMINIMIZED  = 2
   # Activates the window and displays it as a maximized window.
   SW_SHOWMAXIMIZED  = 3
-  # Maximizes the specified window.
+  # Activates the window and displays it as a maximized window.
   SW_MAXIMIZE       = 3
   # Displays a window in its most recent size and position. Similar to SW_SHOWNORMAL, but the window is not activated.
   SW_SHOWNOACTIVATE = 4
@@ -243,8 +242,15 @@ module WinGui
   # flag when minimizing windows from a different thread.
   SW_FORCEMINIMIZE  = 11
 
-  def hide_window(handle)
-    show_window(handle, SW_HIDE)
+  # Hides the window and activates another window
+  def hide_window(win_handle)
+    show_window(win_handle, SW_HIDE)
+  end
+
+  return_thread_process = lambda do |api, *args|
+    WinGui.enforce_count( args, api.prototype, -1)
+    thread = api.call(args.first, process = [1].pack('L'))
+    nonzero_array(thread, *process.unpack('L'))
   end
 
   ##
@@ -265,10 +271,13 @@ module WinGui
   #:call-seq:
   #   thread, process_id = get_window_tread_process_id( win_handle )
   #
-  def_api 'GetWindowThreadProcessId', 'LP', 'L' do |api, *args|
-    raise 'Invalid args count' unless args.size == api.prototype.size-1
-    thread = api.call(args.first, process = [1].pack('L'))
-    [thread, *process.unpack('L')]
+  def_api 'GetWindowThreadProcessId', 'LP', 'L', &return_thread_process
+
+  return_rect = lambda do |api, *args|
+    WinGui.enforce_count( args, api.prototype, -1)
+    rectangle = [0, 0, 0, 0].pack('L*')
+    res = api.call args.first, rectangle
+    res == 0 ? [nil, nil, nil, nil] : rectangle.unpack('L*')
   end
 
   ##
@@ -293,12 +302,7 @@ module WinGui
   #:call-seq:
   #   rect = get_window_rect( win_handle )
   #
-  def_api 'GetWindowRect', 'LP', 'I' do |api, *args|
-    raise 'Invalid args count' unless args.size == api.prototype.size-1
-    rectangle = [0, 0, 0, 0].pack 'L*'
-    api.call args.first, rectangle
-    rectangle.unpack 'L*'
-  end
+  def_api 'GetWindowRect', 'LP', 'I', &return_rect
 
   ##
   # The EnumWindows function enumerates all top-level windows on the screen by passing the handle to
@@ -356,9 +360,43 @@ module WinGui
   #
   #:call-seq:
   #   enum_windows( parent_handle, message ) {|win_handle, message| callback procedure }
+  #
   def_api 'EnumChildWindows', 'LKP', 'L', &return_enum
 
+  ##
+  # GetForegroundWindow function returns a handle to the foreground window (the window with which the user
+  # is currently working). The system assigns a slightly higher priority to the thread that creates the
+  # foreground window than it does to other threads.
+  #
+  # Syntax:  HWND GetForegroundWindow(VOID);
+  #
+  # Return Value: The return value is a handle to the foreground window. The foreground window can be NULL in
+  # certain circumstances, such as when a window is losing activation.
+  #
+  #:call-seq:
+  #   win_handle = (get_)foreground_window()
+  #
   def_api 'GetForegroundWindow', 'V', 'L'
+
+  def foreground?(win_handle)
+    win_handle == foreground_window
+  end
+
+  ##
+  # The GetActiveWindow function retrieves the window handle to the active window attached to
+  # the calling thread's message queue.
+  #
+  # Syntax:  HWND GetActiveWindow(VOID);
+  #
+  # Return Value: The return value is the handle to the active window attached to the calling
+  # thread's message queue. Otherwise, the return value is NULL.
+  #
+  #  Remarks: To get the handle to the foreground window, you can use GetForegroundWindow.
+  #  To get the window handle to the active window in the message queue for another thread, use GetGUIThreadInfo.
+  #
+  #:call-seq:
+  #   win_handle = (get_)active_window()
+  #
   def_api 'GetActiveWindow', 'V', 'L'
 
   def_api 'keybd_event', 'IILL', 'V'

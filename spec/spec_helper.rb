@@ -38,6 +38,7 @@ module GuiTest
   TEST_MAX_RECT = [-4, -4, 1924, 1204]  # on my 1920x1200 display
   TEST_MIN_RECT = [-32000, -32000, -31840, -31976]
   TEST_TEXTAREA_CLASS = 'ATL:00434310'
+  TEST_STATUSBAR_CLASS = 'msctls_statusbar32' 
   TEST_IMPOSSIBLE = 'Impossible'
   TEST_ERROR_CONVERSION = /Can.t convert/
 
@@ -60,23 +61,29 @@ module GuiTest
   end
 
   def hide_method(*names) # hide original method(s) if it is defined
-    names.each do |name|
+    names.map(&:to_s).each do |name|
       WinGui.module_eval do
-        if method_defined? name.to_sym
-          alias_method "orig_#{name.to_s}".to_sym, name.to_sym
-          remove_method name.to_sym
+        aliases = generate_names(name, {}).flatten + [name]
+        aliases.map(&:to_s).each do |ali|
+          if method_defined? ali
+            alias_method "orig_#{ali}".to_sym, ali
+            remove_method ali
+          end
         end
       end
     end
   end
 
   def restore_method(*names) # restore original method if it was hidden
-    names.each do |name|
+    names.map(&:to_s).each do |name| 
       WinGui.module_eval do
-        temp = "orig_#{name.to_s}".to_sym
-        if method_defined? temp
-          alias_method name.to_sym, temp
-          remove_method temp
+        aliases = generate_names(name, {}).flatten + [name]
+        aliases.map(&:to_s).each do |ali|
+          temp = "orig_#{ali}".to_sym
+          if method_defined? temp
+            alias_method ali, temp
+            remove_method temp
+          end
         end
       end
     end
