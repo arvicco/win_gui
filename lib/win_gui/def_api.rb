@@ -150,7 +150,8 @@ module WinGui
         callback = callback 'IIPPPPPP', 'L', &block
 
         status = api.call(id = [id].pack('L'), callback, cmd, 0)
-        nonzero_array(*id.unpack('L'), status)
+        id = status == 0 ? id.unpack('L').first : nil
+        [id, status]
       end
     end
 
