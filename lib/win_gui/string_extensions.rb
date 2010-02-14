@@ -2,11 +2,23 @@ class String
   def snake_case
     gsub(/([a-z])([A-Z0-9])/, '\1_\2' ).downcase
   end
-  
+
+  def camel_case    
+    if self.include? '_'
+      self.split('_').map{|e| e.capitalize}.join
+    else
+      unless self =~ (/^[A-Z]/)
+        self.capitalize
+      else
+        self
+      end
+    end
+  end
+
   def to_w
     (self+"\x00").encode('utf-16LE')
   end
-  
+
   def to_vkeys
     unless size == 1
       raise "Can't convert but a single character: #{self}"

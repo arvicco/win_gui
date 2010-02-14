@@ -5,6 +5,7 @@ module WinGui
     # DLL to use with API decarations by default ('user32')
     DEFAULT_DLL = 'user32'
 
+    ##
     # Defines new method wrappers for Windows API function call:
     #   - Defines method with original (CamelCase) API function name and original signature (matches MSDN description)
     #   - Defines method with snake_case name (converted from CamelCase function name) with enhanced API signature
