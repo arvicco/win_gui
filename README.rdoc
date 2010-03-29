@@ -12,7 +12,7 @@ elements (such as WinGui::Window class and its methods).
 
 !!! This project has been discontinued due to problems with Win32::API Callbacks and
 need to support non-MRI Ruby implementations. So, new project is now based on FFI and
-can be found here:http://github.com/arvicco/win (it is now available as a gem 'win').
+can be found here: http://github.com/arvicco/win (it is now available as a gem 'win').
 
 == SUMMARY
 

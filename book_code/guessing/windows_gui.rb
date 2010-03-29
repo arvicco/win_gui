@@ -185,7 +185,7 @@ module WindowsGui
       end
     
       raise "Control '#{id}' not found" if result == 0
-      Window.new result
+      Gui.new result
     end
 
     def click(id, which = :left, where = :center)
@@ -225,7 +225,7 @@ module WindowsGui
         end
       end
 
-      Window.new @handle
+      Gui.new @handle
     end
   end
 
@@ -233,8 +233,8 @@ module WindowsGui
   def dialog(title, seconds=5)
     close, dlg = begin
       sleep 0.25
-      w = Window.top_level(title, seconds, DialogWndClass)
-      Window.set_foreground_window w.handle
+      w = Gui.top_level(title, seconds, DialogWndClass)
+      Gui.set_foreground_window w.handle
       sleep 0.25
       
       [yield(w), w]

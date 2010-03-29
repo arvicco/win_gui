@@ -170,7 +170,7 @@ class WindowsGui::Window
       sleep 0.2 while (h = find_window nil, title) <= 0; h
     end
 
-    Window.new @handle
+    Gui.new @handle
   end
 end
 
@@ -191,7 +191,7 @@ class WindowsGui::Window
     end
 
     raise "Control '#{id}' not found" if result == 0
-    Window.new result
+    Gui.new result
   end
 end
 
@@ -220,7 +220,7 @@ end
 module WindowsGui
   def dialog(title, seconds=3)
     d = begin
-      w = Window.top_level(title, seconds)
+      w = Gui.top_level(title, seconds)
       yield(w) ? w : nil #(12)
     rescue TimeoutError
     end
