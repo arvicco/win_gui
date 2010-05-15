@@ -1,0 +1,7 @@
+== 0.0.0 / 2010-01-08
+
+* Birthday! Initial concept: Following "Scripted Gui testing with Ruby" by Ian Dees
+
+== 0.2.0 / 2010-05-15
+
+* Window class extracted into a separate lib

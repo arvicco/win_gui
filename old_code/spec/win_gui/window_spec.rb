@@ -1,16 +1,19 @@
 require File.join(File.dirname(__FILE__), ".." , "spec_helper" )
 
-module WinGuiTest
-  include WinGui
-
-  describe Window do
+module GuiTest
+  
+  describe Gui do
     before(:each) { @app = launch_test_app }
     after(:each){ close_test_app }
     
-    context 'initializing' do
+    context 'creating' do
       it 'can be wrapped around any existing window' do
         any_handle = find_window(nil, nil)
         use{ Window.new any_handle }
+      end
+      
+      it 'can be wrapped around specific window' do
+        use{ Window.new @app.handle }
       end
     end
     

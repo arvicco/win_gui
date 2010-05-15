@@ -47,17 +47,17 @@ module GuiTest
 
       it 'constructs argument prototype from uppercase string, enforces the args count' do
         expect { WinGui.def_api 'FindWindow', 'PP', 'L' }.to_not raise_error
-        should_count_args :find_window, :FindWindow, [nil, nil], [nil, TEST_IMPOSSIBLE, 'cmd']
+        should_count_args :find_window, :FindWindow, [nil, nil], [nil, IMPOSSIBLE, 'cmd']
       end
 
       it 'constructs argument prototype from lowercase string, enforces the args count' do
         expect { WinGui.def_api 'FindWindow', 'pp', 'l' }.to_not raise_error
-        should_count_args :find_window, :FindWindow, [nil, nil], [nil, TEST_IMPOSSIBLE, 'cmd']
+        should_count_args :find_window, :FindWindow, [nil, nil], [nil, IMPOSSIBLE, 'cmd']
       end
 
       it 'constructs argument prototype from (mixedcase) array, enforces the args count' do
         expect { WinGui.def_api 'FindWindow', ['p', 'P'], 'L' }.to_not raise_error
-        should_count_args :find_window, :FindWindow, [nil, nil], [nil, TEST_IMPOSSIBLE, 'cmd']
+        should_count_args :find_window, :FindWindow, [nil, nil], [nil, IMPOSSIBLE, 'cmd']
       end
 
       it 'with :rename option, overrides snake_case name for defined method but leaves CamelCase intact' do
@@ -70,17 +70,17 @@ module GuiTest
       it 'defined snake_case method returns expected value when called' do
         WinGui.def_api 'FindWindow', 'PP', 'L'
         find_window(nil, nil).should_not == 0
-        find_window(nil, TEST_IMPOSSIBLE).should == 0
-        find_window(TEST_IMPOSSIBLE, nil).should == 0
-        find_window(TEST_IMPOSSIBLE, TEST_IMPOSSIBLE).should == 0
+        find_window(nil, IMPOSSIBLE).should == 0
+        find_window(IMPOSSIBLE, nil).should == 0
+        find_window(IMPOSSIBLE, IMPOSSIBLE).should == 0
       end
 
       it 'defined CamelCase method returns expected value when called' do
         WinGui.def_api 'FindWindow', 'PP', 'L'
         FindWindow(nil, nil).should_not == 0
-        FindWindow(nil, TEST_IMPOSSIBLE).should == 0
-        FindWindow(TEST_IMPOSSIBLE, nil).should == 0
-        FindWindow(TEST_IMPOSSIBLE, TEST_IMPOSSIBLE).should == 0
+        FindWindow(nil, IMPOSSIBLE).should == 0
+        FindWindow(IMPOSSIBLE, nil).should == 0
+        FindWindow(IMPOSSIBLE, IMPOSSIBLE).should == 0
       end
 
       it 'returns underlying Win32::API object if defined method is called with (:api) argument ' do
@@ -157,17 +157,17 @@ module GuiTest
 
       it 'defined snake_case method returns false/true instead of zero/non-zero' do
         find_window(nil, nil).should == true
-        find_window(nil, TEST_IMPOSSIBLE).should == false
+        find_window(nil, IMPOSSIBLE).should == false
       end
 
       it 'defined CamelCase method still returns zero/non-zero' do
         FindWindow(nil, nil).should_not == true
         FindWindow(nil, nil).should_not == 0
-        FindWindow(nil, TEST_IMPOSSIBLE).should == 0
+        FindWindow(nil, IMPOSSIBLE).should == 0
       end
 
       it 'defined methods enforce the argument count' do
-        should_count_args :find_window, :FindWindow, [nil, nil], [nil, TEST_IMPOSSIBLE, 'cmd']
+        should_count_args :find_window, :FindWindow, [nil, nil], [nil, IMPOSSIBLE, 'cmd']
       end
     end
 
@@ -184,12 +184,12 @@ module GuiTest
       it 'defined CamelCase method still returns zero/non-zero' do
         FindWindow(nil, nil).should_not == true
         FindWindow(nil, nil).should_not == 0
-        FindWindow(nil, TEST_IMPOSSIBLE).should == 0
+        FindWindow(nil, IMPOSSIBLE).should == 0
       end
 
       it 'defined method returns nil (but NOT false) instead of zero' do
-        find_window(nil, TEST_IMPOSSIBLE).should_not == false
-        find_window(nil, TEST_IMPOSSIBLE).should == nil
+        find_window(nil, IMPOSSIBLE).should_not == false
+        find_window(nil, IMPOSSIBLE).should == nil
       end
 
       it 'defined method does not return true when result is non-zero' do
@@ -198,7 +198,7 @@ module GuiTest
       end
 
       it 'defined methods enforce the argument count' do
-        should_count_args :find_window, :FindWindow, [nil, nil], [nil, TEST_IMPOSSIBLE, 'cmd']
+        should_count_args :find_window, :FindWindow, [nil, nil], [nil, IMPOSSIBLE, 'cmd']
       end
     end
 
@@ -285,18 +285,18 @@ module GuiTest
     context 'calling defined methods with attached block to preprocess the API function results' do
       it 'defined method yields raw result to block attached to its invocation' do
         WinGui.def_api 'FindWindow', 'PP', 'L', zeronil: true
-        find_window(nil, TEST_IMPOSSIBLE) {|result| result.should == 0 }
+        find_window(nil, IMPOSSIBLE) {|result| result.should == 0 }
       end
 
       it 'defined method returns result of block attached to its invocation' do
         WinGui.def_api 'FindWindow', 'PP', 'L', zeronil: true
-        return_value = find_window(nil, TEST_IMPOSSIBLE) {|result| 'Value'}
+        return_value = find_window(nil, IMPOSSIBLE) {|result| 'Value'}
         return_value.should == 'Value'
       end
 
       it 'defined method transforms result of block before returning it' do
         WinGui.def_api 'FindWindow', 'PP', 'L', zeronil: true
-        return_value = find_window(nil, TEST_IMPOSSIBLE) {|result| 0 }
+        return_value = find_window(nil, IMPOSSIBLE) {|result| 0 }
         return_value.should_not == 0
         return_value.should == nil
       end

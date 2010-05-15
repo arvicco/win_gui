@@ -1,6 +1,8 @@
+lib_dir = File.join(File.dirname(__FILE__), "..", "lib" )
+$LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include?(lib_dir)
 require 'spec'
-require 'spec/autorun'
 require 'win_gui'
+require 'note'
 
 # Customize RSpec with my own extensions
 module SpecMacros
@@ -21,18 +23,15 @@ end
 
 Spec::Runner.configure { |config| config.extend(SpecMacros) }
 
-module WinGuiTest
-  include Win::Gui
+module GuiTest
+  include WinGui
 
   # Test related Constants:
   TIMEOUT = 0.001
   KEY_DELAY = 0.001
   SLEEP_DELAY = 0.01
-  APP_PATH = File.join(File.dirname(__FILE__), "../misc/locknote/LockNote.exe" )
-  APP_START = RUBY_PLATFORM =~ /cygwin/ ? "cmd /c start `cygpath -w #{APP_PATH}`" : "start #{APP_PATH}"
-#          end
-#
-#          'start "" "' + APP_PATH + '"'
+  APP_PATH = File.join(File.dirname(__FILE__), "test_apps/locknote/LockNote.exe" )
+  APP_START = 'start "" "' + APP_PATH + '"'
   WIN_TITLE = 'LockNote - Steganos LockNote'
   WIN_CLASS = 'ATL:00434098'
   WIN_RECT = [710, 400, 1210, 800]
@@ -61,6 +60,35 @@ module WinGuiTest
     lambda {|*args| args}
   end
 
+  def hide_method(*names) # hide original method(s) if it is defined
+    names.map(&:to_s).each do |name|
+      WinGui.module_eval do
+        aliases = generate_names(name, {}).flatten + [name]
+        aliases.map(&:to_s).each do |ali|
+          if method_defined? ali
+            alias_method "orig_#{ali}".to_sym, ali
+            remove_method ali
+          end
+        end
+      end
+    end
+  end
+
+  def restore_method(*names) # restore original method if it was hidden
+    names.map(&:to_s).each do |name| 
+      WinGui.module_eval do
+        aliases = generate_names(name, {}).flatten + [name]
+        aliases.map(&:to_s).each do |ali|
+          temp = "orig_#{ali}".to_sym
+          if method_defined? temp
+            alias_method ali, temp
+            remove_method temp
+          end
+        end
+      end
+    end
+  end
+
   def launch_test_app
     system APP_START
     sleep SLEEP_DELAY until (handle = find_window(nil, WIN_TITLE))
@@ -68,8 +96,8 @@ module WinGuiTest
   end
 
   def close_test_app(app = @launched_test_app)
-    while app && app.respond_to?(:handle) && find_window(nil, WIN_TITLE)
-      post_message(app.handle, WM_SYSCOMMAND, SC_CLOSE, nil)
+    while app and app.respond_to? :handle and find_window(nil, WIN_TITLE)
+      post_message(app.handle, WM_SYSCOMMAND, SC_CLOSE, 0)
       sleep SLEEP_DELAY
     end
     @launched_test_app = nil

@@ -31,13 +31,13 @@ module WinGUITest
       end
 
       it 'has text property equal to underlying window text(title)' do
-        @app.text.should == TEST_WIN_TITLE
+        @app.text.should == WIN_TITLE
       end
 
       it 'closes when asked nicely' do
         @app.close
-        sleep TEST_SLEEP_DELAY # needed to ensure window had enough time to close down
-        find_window(nil, TEST_WIN_TITLE).should == nil #!!!!!!
+        sleep SLEEP_DELAY # needed to ensure window had enough time to close down
+        find_window(nil, WIN_TITLE).should == nil #!!!!!!
       end
 
       it 'waits f0r window to disappear (NB: this happens before handle is released!)' do
@@ -56,7 +56,7 @@ module WinGUITest
       end
 
       it 'finds top-level window by title and wraps it in a Window object' do
-        win = Window::Window.top_level( TEST_WIN_TITLE, 1)
+        win = Window::Window.top_level( WIN_TITLE, 1)
         win.handle.should == @app.handle
       end
     end
@@ -69,17 +69,17 @@ module WinGUITest
       end
 
       it 'finds child window(control) by class' do
-        @app.child(TEST_TEXTAREA_CLASS).should_not == nil
+        @app.child(TEXTAREA_CLASS).should_not == nil
       end
 
       it 'finds child window(control) by name' do
         pending 'Need to find control with short name'
-        @app.child(TEST_TEXTAREA_TEXT).should_not == nil
+        @app.child(TEXTAREA_TEXT).should_not == nil
       end
 
       it 'finds child window(control) by control ID' do
         pending 'Need to find some control ID'
-        @app.child(TEST_TEXTAREA_ID).should_not == nil
+        @app.child(TEXTAREA_ID).should_not == nil
       end
 
       it 'raises error if wrong control is given' do
@@ -102,17 +102,17 @@ module WinGUITest
         children.should_not be_empty
         children.should have(2).elements
         children.each{|child| child?(@app.handle, child.handle).should == true }
-        get_class_name(children.last.handle).should == TEST_TEXTAREA_CLASS
+        get_class_name(children.last.handle).should == TEXTAREA_CLASS
       end
 
 #      it 'finds child window(control) by name' do
 #        pending 'Need to find control with short name'
-#        @app.child(TEST_TEXTAREA_TEXT).should_not == nil
+#        @app.child(TEXTAREA_TEXT).should_not == nil
 #      end
 #
 #      it 'finds child window(control) by control ID' do
 #        pending 'Need to find some control ID'
-#        @app.child(TEST_TEXTAREA_ID).should_not == nil
+#        @app.child(TEXTAREA_ID).should_not == nil
 #      end
 #
 #      it 'raises error if wrong control is given' do

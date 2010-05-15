@@ -1,21 +1,8 @@
-require 'win/gui'
-
 module WinGui
-  # Delay between key commands (events)
-  WG_KEY_DELAY = 0.00001
-  # Wait delay quant
-  WG_SLEEP_DELAY = 0.001
-  # Timeout waiting for Window to be closed
-  WG_CLOSE_TIMEOUT = 1
-
   class Window
-    include Win::Gui
-    extend Win::Gui
+    include WinGui
+    extend WinGui
     
-    def initialize(handle)
-      @handle = handle
-    end
-
     attr_reader :handle
     
     # find top level window by title, return wrapped Window object
@@ -26,6 +13,10 @@ module WinGui
       Window.new @handle
     end  
     
+    def initialize(handle)
+      @handle = handle
+    end
+   
     # find child window (control) by title, window class, or control ID:
     def child(id)
       result = case id
@@ -45,7 +36,7 @@ module WinGui
     end
 
     def children
-      enum_child_windows(@handle).map{|child_handle| Window.new child_handle}
+      enum_child_windows(@handle,'Msg').map{|child_handle| Window.new child_handle}
     end
 
     # emulate click of the control identified by id
@@ -61,7 +52,7 @@ module WinGui
     end
     
     def close
-      post_message @handle, WM_SYSCOMMAND, SC_CLOSE, nil
+      post_message @handle, WM_SYSCOMMAND, SC_CLOSE, 0
     end
     
     def wait_for_close

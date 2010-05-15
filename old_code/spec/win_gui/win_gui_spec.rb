@@ -123,16 +123,16 @@ module GuiTest
 
       it 'returns either Integer Window handle or nil' do
         find_window(nil, nil).should be_a_kind_of Integer
-        find_window(TEST_IMPOSSIBLE, nil).should == nil
+        find_window(IMPOSSIBLE, nil).should == nil
       end
 
       it 'returns nil if Window is not found' do
-        find_window(TEST_IMPOSSIBLE, nil).should == nil
-        find_window(nil, TEST_IMPOSSIBLE).should == nil
-        find_window(TEST_IMPOSSIBLE, TEST_IMPOSSIBLE).should == nil
-        find_window_w(TEST_IMPOSSIBLE, nil).should == nil
-        find_window_w(nil, TEST_IMPOSSIBLE).should == nil
-        find_window_w(TEST_IMPOSSIBLE, TEST_IMPOSSIBLE).should == nil
+        find_window(IMPOSSIBLE, nil).should == nil
+        find_window(nil, IMPOSSIBLE).should == nil
+        find_window(IMPOSSIBLE, IMPOSSIBLE).should == nil
+        find_window_w(IMPOSSIBLE, nil).should == nil
+        find_window_w(nil, IMPOSSIBLE).should == nil
+        find_window_w(IMPOSSIBLE, IMPOSSIBLE).should == nil
       end
 
       it 'finds at least one window if both args are nils' do
@@ -142,10 +142,10 @@ module GuiTest
 
       it 'finds top-level window by window class or title' do
         test_app do |app|
-          find_window(TEST_WIN_CLASS, nil).should == app.handle
-          find_window(nil, TEST_WIN_TITLE).should == app.handle
-          find_window_w(TEST_WIN_CLASS.to_w, nil).should == app.handle
-          find_window_w(nil, TEST_WIN_TITLE.to_w).should == app.handle
+          find_window(WIN_CLASS, nil).should == app.handle
+          find_window(nil, WIN_TITLE).should == app.handle
+          find_window_w(WIN_CLASS.to_w, nil).should == app.handle
+          find_window_w(nil, WIN_TITLE.to_w).should == app.handle
         end
       end
     end
@@ -156,13 +156,13 @@ module GuiTest
 
       it 'returns nil if wrong control is given' do
         parent_handle = any_handle
-        find_window_ex(parent_handle, 0, TEST_IMPOSSIBLE, nil).should == nil
-        find_window_ex(parent_handle, 0, nil, TEST_IMPOSSIBLE).should == nil
+        find_window_ex(parent_handle, 0, IMPOSSIBLE, nil).should == nil
+        find_window_ex(parent_handle, 0, nil, IMPOSSIBLE).should == nil
       end
 
       it 'finds child window/control by class' do
         test_app do |app|
-          ta_handle = find_window_ex(app.handle, 0, TEST_TEXTAREA_CLASS, nil)
+          ta_handle = find_window_ex(app.handle, 0, TEXTAREA_CLASS, nil)
           ta_handle.should_not == nil
           ta_handle.should == app.textarea.handle
         end
@@ -238,8 +238,8 @@ module GuiTest
 
       it 'returns correct window text' do
         test_app do |app|
-          get_window_text(app.handle).should == TEST_WIN_TITLE
-          get_window_text_w(app.handle).should == TEST_WIN_TITLE
+          get_window_text(app.handle).should == WIN_TITLE
+          get_window_text_w(app.handle).should == WIN_TITLE
         end
       end
     end
@@ -254,8 +254,8 @@ module GuiTest
 
       it 'returns correct window class name' do
         test_app do |app|
-          get_class_name(app.handle).should == TEST_WIN_CLASS
-          get_class_name_w(app.handle).should == TEST_WIN_CLASS
+          get_class_name(app.handle).should == WIN_CLASS
+          get_class_name_w(app.handle).should == WIN_CLASS
         end
       end
     end
@@ -290,7 +290,7 @@ module GuiTest
 
       it 'returns window`s border rectangle' do
         test_app do |app|
-          get_window_rect(app.handle).should == TEST_WIN_RECT
+          get_window_rect(app.handle).should == WIN_RECT
         end
       end
     end
@@ -370,9 +370,9 @@ module GuiTest
           text = '123 456'
           text.upcase.each_byte do |b| # upcase needed since user32 keybd_event expects upper case chars
             keybd_event(b.ord, 0, KEYEVENTF_KEYDOWN, 0)
-            sleep TEST_KEY_DELAY
+            sleep KEY_DELAY
             keybd_event(b.ord, 0, KEYEVENTF_KEYUP, 0)
-            sleep TEST_KEY_DELAY
+            sleep KEY_DELAY
           end
           app.textarea.text.should =~ Regexp.new(text)
           7.times {keystroke(VK_CONTROL, 'Z'.ord)} # dirty hack!
@@ -449,8 +449,8 @@ module GuiTest
           enum = enum_child_windows(app.handle, message = 'Message')
           enum.should be_a_kind_of Array
           enum.should have(2).elements
-          class_name(enum.first).should == TEST_STATUSBAR_CLASS
-          class_name(enum.last).should == TEST_TEXTAREA_CLASS
+          class_name(enum.first).should == STATUSBAR_CLASS
+          class_name(enum.last).should == TEXTAREA_CLASS
         end
       end
 
@@ -462,8 +462,8 @@ module GuiTest
             message.should == 'Message'
           end
           enum.should have(2).elements
-          class_name(enum.first).should == TEST_STATUSBAR_CLASS
-          class_name(enum.last).should == TEST_TEXTAREA_CLASS
+          class_name(enum.first).should == STATUSBAR_CLASS
+          class_name(enum.last).should == TEXTAREA_CLASS
         end
       end
 
@@ -476,8 +476,8 @@ module GuiTest
             1
           end
           enum.should have(1).element
-          class_name(enum.first).should == TEST_STATUSBAR_CLASS
-#          class_name(enum.last).should == TEST_TEXTAREA_CLASS
+          class_name(enum.first).should == STATUSBAR_CLASS
+#          class_name(enum.last).should == TEXTAREA_CLASS
         end
       end
     end
