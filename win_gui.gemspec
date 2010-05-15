@@ -9,8 +9,8 @@ require 'version'
 Gem::Specification.new do |gem|
   gem.name        = "win_gui"
   gem.version     = ::WinGui::VERSION
-  gem.summary     = %q{FIXME: New project win_gui}
-  gem.description = %q{FIXME: New project win_gui}
+  gem.summary     = %q{Abstractions/wrappers around GUI-related Win32 API functions}
+  gem.description = %q{Abstractions/wrappers around GUI-related Win32 API functions}
   gem.authors     = ["arvicco"]
   gem.email       = "arvitallian@gmail.com"
   gem.homepage    = %q{http://github.com/arvicco/win_gui}
@@ -31,9 +31,9 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = ["LICENSE", "HISTORY", "README.rdoc"]
     
   # Dependencies
-  gem.add_development_dependency(%q{rspec}, [">= 1.2.9"])
-  gem.add_development_dependency(%q{cucumber}, [">= 0"])
-  #gem.add_dependency(%q{bunder}, [">= 1.2.9"])
+  gem.add_development_dependency("rspec", [">= 1.2.9"])
+  gem.add_development_dependency("cucumber", [">= 0"])
+  gem.add_dependency("win", [">= 0.3.1"])
 
   gem.rubyforge_project = ""
   gem.rubygems_version  = `gem -v`
