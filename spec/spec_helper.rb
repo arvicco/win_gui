@@ -22,7 +22,8 @@ end
 Spec::Runner.configure { |config| config.extend(SpecMacros) }
 
 module WinGuiTest
-  include Win::Gui
+  include Win::Gui  # This is a namespace from win gem.
+  include WinGui    # This is our own main namespace. TODO: looks confusing... better names?
 
   # Test related Constants:
   TIMEOUT = 0.001
@@ -30,9 +31,8 @@ module WinGuiTest
   SLEEP_DELAY = 0.01
   APP_PATH = File.join(File.dirname(__FILE__), "../misc/locknote/LockNote.exe" )
   APP_START = RUBY_PLATFORM =~ /cygwin/ ? "cmd /c start `cygpath -w #{APP_PATH}`" : "start #{APP_PATH}"
-#          end
-#
-#          'start "" "' + APP_PATH + '"'
+  #          'start "" "' + APP_PATH + '"'
+  DIALOG_TITLE = "Save As"
   WIN_TITLE = 'LockNote - Steganos LockNote'
   WIN_CLASS = 'ATL:00434098'
   WIN_RECT = [710, 400, 1210, 800]
@@ -49,7 +49,6 @@ module WinGuiTest
   end
 
   def any_handle
-    WinGui.def_api 'FindWindow', 'PP', 'L' unless respond_to? :find_window
     find_window(nil, nil)
   end
 
@@ -65,6 +64,12 @@ module WinGuiTest
     system APP_START
     sleep SLEEP_DELAY until (handle = find_window(nil, WIN_TITLE))
     @launched_test_app = Window.new handle
+
+    def @launched_test_app.textarea #define singleton method retrieving app's text area
+      Window.new find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
+    end
+
+    @launched_test_app
   end
 
   def close_test_app(app = @launched_test_app)
@@ -78,10 +83,6 @@ module WinGuiTest
   # Creates test app object and yields it back to the block
   def test_app
     app = launch_test_app
-
-    def app.textarea #define singleton method retrieving app's text area
-      Window.new find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
-    end
 
     yield app
     close_test_app

@@ -5,3 +5,7 @@
 == 0.2.0 / 2010-05-15
 
 * Window class extracted into a separate lib
+
+== 0.2.1 / 2010-05-31
+
+* Complex convenience methods (dialog

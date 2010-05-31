@@ -91,11 +91,11 @@ module WinGui
 
     private  # Helper methods:
 
-    # Returns string buffer - used to supply string pointer reference to API functions
-    #
-    def buffer(size = 1024, code = "\x00")
-      code * size
-    end
+#    # Returns FFI string buffer - used to supply string pointer reference to API functions
+#    #
+#    def buffer(size = 1024, char = "\x00")
+#      FFI.MemoryPointer.from_string(char * size)
+#    end
 
     # Returns array of given args if none of them is zero,
     # if any arg is zero, returns array of nils
@@ -119,8 +119,8 @@ module WinGui
     end
 
     # Procedure that calls api function expecting a callback. If runtime block is given
-    # it is converted into callback, otherwise procedure returns an array of all handles
-    # pushed into callback by api enumeration
+    # it is converted into actual callback, otherwise procedure returns an array of all
+    # handles pushed into callback by api enumeration
     #
     def return_enum
       lambda do |api, *args, &block|
