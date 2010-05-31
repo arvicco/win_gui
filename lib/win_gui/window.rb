@@ -51,7 +51,6 @@ module WinGui
 #     end
 #   end
 
-
     # find child window (control) by title, window class, or control ID:
     def child(id)
       result = case id
@@ -77,8 +76,7 @@ module WinGui
 
     # emulate click of the control identified by id
     def click(id)
-      rectangle = FFI::MemoryPointer(:long, 4).write_array_of_long [0, 0, 0, 0]
-      left, top, right, bottom = get_window_rect child(id).handle, rectangle
+      left, top, right, bottom = get_window_rect child(id).handle
       center = [(left + right) / 2, (top + bottom) / 2]
       set_cursor_pos *center
       mouse_event MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0

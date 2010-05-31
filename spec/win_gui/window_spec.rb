@@ -45,14 +45,19 @@ module WinGuiTest
     end
 
     describe '.top_level' do
-      it 'finds any top-level window (title = nil) and wraps it in a Window object' do
-        use { @win = Window.top_level(class: nil, title: nil, timeout: 1) }
-        Window.should === @win
-      end
-
       it 'finds top-level window by title and wraps it in a Window object' do
         win = Window.top_level( title: WIN_TITLE, timeout: 1)
         win.handle.should == @app.handle
+      end
+
+      it 'finds top-level window by class and wraps it in a Window object' do
+        win = Window.top_level( class: WIN_CLASS, timeout: 1)
+        win.handle.should == @app.handle
+      end
+
+      it 'finds ANY top-level window without args and wraps it in a Window object' do
+        use { @win = Window.top_level() }
+        Window.should === @win
       end
 
       it 'returns nil immediately if top-level window with given title not found' do
