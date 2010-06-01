@@ -95,7 +95,7 @@ module GuiTest
     @launched_test_app = Window.new handle
   end
 
-  def close_test_app(app = @launched_test_app)
+  def close_test_app
     while app and app.respond_to? :handle and find_window(nil, WIN_TITLE)
       post_message(app.handle, WM_SYSCOMMAND, SC_CLOSE, 0)
       sleep SLEEP_DELAY

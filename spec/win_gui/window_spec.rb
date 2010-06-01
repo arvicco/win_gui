@@ -68,8 +68,8 @@ module WinGuiTest
 
       it 'returns nil after timeout if top-level window with given title not found' do
         start = Time.now
-        Window.top_level( title: IMPOSSIBLE, timeout: 1).should == nil
-        (Time.now - start).should be_close 1, 0.02
+        Window.top_level( title: IMPOSSIBLE, timeout: 0.5).should == nil
+        (Time.now - start).should be_close 0.5, 0.02
       end
     end
 
@@ -104,13 +104,13 @@ module WinGuiTest
     describe '#children' do
       spec { use { children = @app.children  }}
 
-      it 'returns an array of Windows that are descendants (not only DIRECTchildren) of a given Window' do
+      it 'returns an array of Windows that are descendants (not only DIRECT children) of a given Window' do
         children = @app.children
         children.should be_a_kind_of Array
         children.should_not be_empty
         children.should have(2).elements
         children.each{|child| child?(@app.handle, child.handle).should == true }
-        get_class_name(children.last.handle).should == TEXTAREA_CLASS
+        children.last.class_name.should == TEXTAREA_CLASS
       end
 
 #      it 'finds child window(control) by name' do

@@ -1,4 +1,5 @@
 require 'version'
+require 'extension'
 
 module WinGui
 

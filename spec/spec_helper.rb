@@ -72,10 +72,11 @@ module WinGuiTest
     @launched_test_app
   end
 
-  def close_test_app(app = @launched_test_app)
-    while app && app.respond_to?(:handle) && find_window(nil, WIN_TITLE)
-      post_message(app.handle, WM_SYSCOMMAND, SC_CLOSE, nil)
+  def close_test_app
+    while @launched_test_app && find_window(nil, WIN_TITLE)
+      post_message(@launched_test_app.handle, WM_SYSCOMMAND, SC_CLOSE, nil)
       sleep SLEEP_DELAY
+      keystroke('N') if find_window(nil, "Steganos Locknote") # Dealing with closing modal dialog
     end
     @launched_test_app = nil
   end

@@ -7,8 +7,8 @@ module WinGuiTest
     after(:each) { close_test_app }
 
     describe '#dialog' do
-      before(:each){ keystroke(VK_ALT, 'F'.ord, 'A'.ord) }
-      after(:each) { keystroke(VK_ESCAPE) }
+      before(:each){ keystroke(VK_ALT, 'F', 'A') }  # Open "Save as" modal dialog
+      after(:each) { keystroke(VK_ESCAPE) }                 # Close modal dialog if it is opened
 
       it 'returns top-level dialog window with given title if no block attached' do
         dialog_window = dialog(DIALOG_TITLE, 0.1)
@@ -43,7 +43,7 @@ module WinGuiTest
 
     describe 'convenience input methods on top of Windows API' do
       describe '#keystroke' do
-        spec{ use{ keystroke( vkey = 30, vkey = 30) }}
+        spec{ use{ keystroke( vkey = 30, char = 'Z') }}
 
         it 'emulates combinations of keys pressed (Ctrl+Alt+P+M, etc)' do
           keystroke(VK_CONTROL, 'A'.ord)
@@ -58,7 +58,7 @@ module WinGuiTest
           text = '12 34'
           type_in(text)
           @app.textarea.text.should =~ Regexp.new(text)
-          5.times {keystroke(VK_CONTROL, 'Z'.ord)} # rolling back changes to allow window closing without dialog!
+          5.times {keystroke(VK_CONTROL, 'Z')} # rolling back changes to allow window closing without dialog!
         end
       end # describe '#type_in'
 

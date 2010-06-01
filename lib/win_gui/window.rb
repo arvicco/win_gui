@@ -22,7 +22,7 @@ module WinGui
     def self.top_level(opts={})
       window_title = opts[:title]
       window_class = opts[:class]
-      timeout = opts[:timeout] # || LOOKUP_TIMEOUT
+      timeout = opts[:timeout] # || LOOKUP_TIMEOUT ? # no timeout by default
 
       if timeout
         begin
@@ -37,19 +37,6 @@ module WinGui
       end
       Window.new(@handle) if @handle
     end
-
-#    def self.top_level(title, seconds=10, wnd_class = nil)
-#       @handle = timeout(seconds) do
-#         loop do
-#           h = find_window wnd_class, title
-#           break h if h > 0
-#           sleep 0.3
-#         end
-#       end
-#
-#       Gui.new @handle
-#     end
-#   end
 
     # find child window (control) by title, window class, or control ID:
     def child(id)
