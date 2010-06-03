@@ -14,18 +14,9 @@ module WinGuiTest
     end
 
     context 'manipulating' do
-
       it 'has handle property equal to underlying window handle' do
         any = Window.new any_handle
         any.handle.should == any_handle
-      end
-
-      it 'has class_name property' do
-        @app.class_name.should == WIN_CLASS
-      end
-
-      it 'has text property equal to underlying window text(title)' do
-        @app.text.should == WIN_TITLE
       end
 
       it 'closes when asked nicely' do
@@ -41,6 +32,29 @@ module WinGuiTest
         (Time.now - start).should be <= CLOSE_TIMEOUT
         window_visible?(@app.handle).should be false
         window?(@app.handle).should be false
+      end
+    end
+
+    context 'handle-related WinGui functions as instance methods' do
+      it 'calls all WinGui functions as instance methods (with handle as implicit first argument)' do
+        @app.window?.should == true
+        @app.visible?.should == true
+        @app.foreground?.should == true
+        @app.maximized?.should == false
+        @app.maximized?.should == false
+        @app.child?(any_handle).should == false
+
+        @app.window_rect.should be_an Array
+        @app.window_thread_process_id.should be_an Array
+        @app.enum_child_windows.should be_an Array
+      end
+
+      it 'has class_name and text properties (derived from WinGui function calls)' do
+        @app.class_name.should == WIN_CLASS
+        # window_text propery accessed via GetWindowText
+        @app.window_text.should == WIN_TITLE
+        # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
+        @app.text.should == WIN_TITLE
       end
     end
 

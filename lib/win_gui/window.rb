@@ -4,8 +4,8 @@ module WinGui
   class Window
     # Make convenience methods from both WinGui and Win::Gui available as both class and instance methods
     # Looks a bit circular though...
-    include WinGui
-    extend WinGui
+#    include WinGui
+#    extend WinGui
 
     def initialize(handle)
       @handle = handle
@@ -27,13 +27,13 @@ module WinGui
       if timeout
         begin
           timeout(timeout) do
-            sleep SLEEP_DELAY while (@handle = find_window window_class, window_title) == nil
+            sleep SLEEP_DELAY while (@handle = WinGui.find_window window_class, window_title) == nil
           end
         rescue TimeoutError
           nil
         end
       else
-        @handle = find_window window_class, window_title
+        @handle = WinGui.find_window window_class, window_title
       end
       Window.new(@handle) if @handle
     end
@@ -42,13 +42,13 @@ module WinGui
     def child(id)
       result = case id
         when String
-          by_title = find_window_ex @handle, 0, nil, id.gsub('_', '&' )
-          by_class = find_window_ex @handle, 0, id, nil
+          by_title = find_window_ex 0, nil, id.gsub('_', '&' )
+          by_class = find_window_ex 0, id, nil
           by_title ? by_title : by_class
         when Fixnum
-          get_dlg_item @handle, id
+          get_dlg_item id
         when nil
-          find_window_ex @handle, 0, nil, nil
+          find_window_ex 0, nil, nil
         else
           nil
       end
@@ -58,38 +58,49 @@ module WinGui
 
     # returns array of Windows that are descendants (not only DIRECTchildren) of a given Window
     def children
-      enum_child_windows(@handle).map{|child_handle| Window.new child_handle}
+      enum_child_windows.map{|child_handle| Window.new child_handle}
     end
 
     # emulate click of the control identified by id
     def click(id)
-      left, top, right, bottom = get_window_rect child(id).handle
+      left, top, right, bottom = WinGui.get_window_rect child(id).handle
       center = [(left + right) / 2, (top + bottom) / 2]
-      set_cursor_pos *center
-      mouse_event MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
-      mouse_event MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
-    end
-
-    def close
-      post_message @handle, WM_SYSCOMMAND, SC_CLOSE, nil
+      WinGui.set_cursor_pos *center
+      WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
+      WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
     end
 
     def wait_for_close
       timeout(CLOSE_TIMEOUT) do
-        sleep SLEEP_DELAY while window_visible?(@handle)
+        sleep SLEEP_DELAY while window_visible?
       end
     end
 
-    # Window class name property - static (not changing)
-    def class_name
-      @class_name ||= get_class_name @handle
+    # We alias convenience method shut_window (from Win::Gui::WIndow) with even more convenient
+    #   window.close
+    # Please keep in mind that Win32 API has another function CloseWindow that merely MINIMIZES window.
+    # If you want to invoke this function, you can do it like this:
+    #   window.close_window
+    def close
+      shut_window
     end
 
-    # Window text/title property - dynamic (changing)
-    def text
-      buffer = FFI::MemoryPointer.from_string("\x0" * 2048)
-      num_chars = send_message @handle, WM_GETTEXT, buffer.size, buffer # length?
-      num_chars == 0 ? '' : buffer.read_string
+    # Since Window instances wrap actual window handles, they should support WinGui functions
+    # manipulating these handles. Therefore, when unsupported instance method is invoked, we check if
+    # WinGui responds to such method, and if yes, call it with our window handle as a first argument.
+    # This gives us all handle-related WinGui functions as instance methods for Window instances, like so:
+    #   window.visible?
+    # This API is much more Ruby-like compared to:
+    #   visible?(window.handle)
+    # Of course, if we unvoke WinGui function that DOESN'T accept handle as a first arg this way, we are screwed.
+    # Call such functions only like this:
+    #   WinGui.function(*args)
+    def method_missing(name, *args, &block)
+      if WinGui.respond_to? name
+         WinGui.send(name, @handle, *args, &block)
+      else
+        super
+      end
     end
   end
 end

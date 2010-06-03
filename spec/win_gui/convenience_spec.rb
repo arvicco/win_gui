@@ -46,19 +46,19 @@ module WinGuiTest
         spec{ use{ keystroke( vkey = 30, char = 'Z') }}
 
         it 'emulates combinations of keys pressed (Ctrl+Alt+P+M, etc)' do
-          keystroke(VK_CONTROL, 'A'.ord)
+          keystroke(VK_CONTROL, 'A')
           keystroke(VK_SPACE)
           @app.textarea.text.should.should == ' '
-          2.times {keystroke(VK_CONTROL, 'Z'.ord)} # rolling back changes to allow window closing without dialog!
+          keystroke('1', '2', 'A', 'B'.ord)
+          @app.textarea.text.should.should == ' 12ab'
         end
       end # describe '#keystroke'
 
       describe '#type_in' do
         it 'types text message into the window holding the focus' do
-          text = '12 34'
+          text = '1234 abcdefg'
           type_in(text)
           @app.textarea.text.should =~ Regexp.new(text)
-          5.times {keystroke(VK_CONTROL, 'Z')} # rolling back changes to allow window closing without dialog!
         end
       end # describe '#type_in'
 

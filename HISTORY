@@ -9,3 +9,7 @@
 == 0.2.1 / 2010-05-31
 
 * Complex convenience methods (dialog
+
+== 0.2.2 / 2010-06-03
+
+* WinGui functions can be used as instance methods on Window (with handle implicit first arg)

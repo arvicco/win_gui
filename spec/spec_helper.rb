@@ -62,30 +62,28 @@ module WinGuiTest
 
   def launch_test_app
     system APP_START
-    sleep SLEEP_DELAY until (handle = find_window(nil, WIN_TITLE))
-    @launched_test_app = Window.new handle
+    @test_app = Window.top_level( title: WIN_TITLE, timeout: 10)
 
-    def @launched_test_app.textarea #define singleton method retrieving app's text area
-      Window.new find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
+    def @test_app.textarea #define singleton method retrieving app's text area
+      Window.new WinGui::find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
     end
 
-    @launched_test_app
+    @test_app
   end
 
   def close_test_app
-    while @launched_test_app && find_window(nil, WIN_TITLE)
-      post_message(@launched_test_app.handle, WM_SYSCOMMAND, SC_CLOSE, nil)
-      sleep SLEEP_DELAY
-      keystroke('N') if find_window(nil, "Steganos Locknote") # Dealing with closing modal dialog
+    while @test_app && find_window(nil, WIN_TITLE)
+      @test_app.close
+      # Dealing with closing confirmation modal dialog
+      keystroke("N") if Window.top_level( title: "Steganos Locknote", timeout: SLEEP_DELAY)
     end
-    @launched_test_app = nil
+    @test_app = nil
   end
 
   # Creates test app object and yields it back to the block
   def test_app
-    app = launch_test_app
-
-    yield app
+    test_app = launch_test_app
+    yield test_app
     close_test_app
   end
 

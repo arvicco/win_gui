@@ -2,7 +2,7 @@ require 'win/gui'
 
 module WinGui
   include Win::Gui
-#    extend Win::Gui
+  extend Win::Gui
 
   # Delay between key commands/events (in sec)
   KEY_DELAY = 0.00001
@@ -47,7 +47,7 @@ module WinGui
   # types text message into a window currently holding the focus
   def type_in(message)
     message.scan(/./m) do |char|
-      keystroke(*char.to_vkeys)
+      keystroke(*char.to_key)
     end
   end
 
