@@ -1,5 +1,5 @@
-require 'version'
-require 'extension'
+require_relative 'version'
+require_relative 'extension'
 
 module WinGui
 

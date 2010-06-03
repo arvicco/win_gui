@@ -88,28 +88,53 @@ module WinGuiTest
     end
 
     describe '#child' do
-      spec { use { @control = @app.child(title_class_id = nil)  }}
+      spec { use { @child = @app.child(title: "Title", class: "Class", id: 0)  }}
 
-      it 'finds any child window(control) if given nil' do
-        @app.child(nil).should_not == nil
+      it 'finds child window by title and returns it as a Window object' do
+        pending 'No named children in test app!'
+        child = @app.child( title: WIN_TITLE)
+        child.should == nil #
       end
 
-      it 'finds child window(control) by class' do
-        @app.child(TEXTAREA_CLASS).should_not == nil
+      it 'finds child window with given ID and returns it as a Window object' do
+        pending 'No controls with ID in test app!'
+        child = @app.child( title: WIN_TITLE)
+        child.should == nil #
       end
 
-      it 'finds child window(control) by name' do
-        pending 'Need to find control with short name'
-        @app.child(TEXTAREA_TEXT).should_not == nil
+      it 'finds child window by class and returns it as a Window object (no timeout)' do
+        child = @app.child( class: TEXTAREA_CLASS)
+        child.should_not == nil
+        @app.child?(child.handle).should == true
       end
 
-      it 'finds child window(control) by control ID' do
-        pending 'Need to find some control ID'
-        @app.child(TEXTAREA_ID).should_not == nil
+      it 'finds child window by class and returns it as a Window object (with timeout)' do
+#        p @app.find_window_ex(0, TEXTAREA_CLASS, nil)
+#        p @app.find_window_ex(0, STATUSBAR_CLASS, nil)
+        child = @app.child( class: TEXTAREA_CLASS, timeout: 0.5)
+        child.should_not == nil
+        @app.child?(child.handle).should == true
+        child = @app.child( class: STATUSBAR_CLASS, timeout: 0.5)
+        child.should_not == nil
+        @app.child?(child.handle).should == true
       end
 
-      it 'raises error if wrong control is given' do
-        expect { @app.child('Impossible Control')}.to raise_error "Control 'Impossible Control' not found"
+      it 'finds ANY child window without args' do
+        use { @child = @app.child() }
+        @child.should_not == nil
+        @app.child?(@child.handle).should == true
+      end
+
+      it 'returns nil immediately if specific child not found' do
+        start = Time.now
+        @app.child( title: IMPOSSIBLE).should == nil
+        (Time.now - start).should be_close 0, 0.02
+      end
+
+      it 'returns nil after timeout if specific child not found' do
+        start = Time.now
+        @app.child( title: IMPOSSIBLE, timeout: 0.5).should == nil
+        (Time.now - start).should be_close 0.5, 0.02
       end
 
       it 'substitutes & for _ when searching by title ("&Yes" type controls)' # Why?

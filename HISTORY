@@ -17,3 +17,7 @@
 == 0.2.3 / 2010-06-03
 
 * Minor cleanup/refactoring
+
+== 0.2.4 / 2010-06-03
+
+* Unified interface for Window.top_level and Window#child
