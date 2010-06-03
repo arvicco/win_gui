@@ -13,3 +13,7 @@
 == 0.2.2 / 2010-06-03
 
 * WinGui functions can be used as instance methods on Window (with handle implicit first arg)
+
+== 0.2.3 / 2010-06-03
+
+* Minor cleanup/refactoring

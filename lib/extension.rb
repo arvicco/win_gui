@@ -24,4 +24,8 @@ class String
         raise "Can't convert unknown character: #{self}"
     end
   end
+
+  def to_print
+    force_encoding('cp1251').encode(Encoding.default_external, :undef => :replace)
+  end
 end

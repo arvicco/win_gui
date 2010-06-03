@@ -22,9 +22,9 @@ module WinGui
   # We work with dialog window in a block, and then we wait for it to close before proceeding.
   # That is, unless your block returns nil, in which case dialog is ignored and method immediately returns nil
   # If no block is given, method just returns found dialog window (or nil if dialog is not found)
-  def dialog(title, timeout=LOOKUP_TIMEOUT)
-    dialog = Window.top_level(class: DIALOG_WINDOW_CLASS, title: title, timeout: timeout)
-    #set_foreground_window dialog.handle if dialog # TODO: Should be converted to d_w.s_f_g call!
+  def dialog(opts={})
+    dialog = Window.top_level( {class: DIALOG_WINDOW_CLASS, timeout: LOOKUP_TIMEOUT}.merge opts )
+    dialog.set_foreground_window if dialog
     wait = block_given? ? yield(dialog) : false
     dialog.wait_for_close if dialog && wait
     dialog

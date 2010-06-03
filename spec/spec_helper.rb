@@ -75,7 +75,7 @@ module WinGuiTest
     while @test_app && find_window(nil, WIN_TITLE)
       @test_app.close
       # Dealing with closing confirmation modal dialog
-      keystroke("N") if Window.top_level( title: "Steganos Locknote", timeout: SLEEP_DELAY)
+      keystroke("N") if Window.top_level( title: "Steganos Locknote", timeout: SLEEP_DELAY*5)
     end
     @test_app = nil
   end

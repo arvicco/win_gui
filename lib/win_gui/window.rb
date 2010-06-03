@@ -56,22 +56,22 @@ module WinGui
       Window.new result
     end
 
-    # returns array of Windows that are descendants (not only DIRECTchildren) of a given Window
+    # returns array of Windows that are descendants (not only DIRECT children) of a given Window
     def children
       enum_child_windows.map{|child_handle| Window.new child_handle}
     end
 
     # emulate click of the control identified by id
     def click(id)
-      left, top, right, bottom = WinGui.get_window_rect child(id).handle
+      left, top, right, bottom = child(id).get_window_rect
       center = [(left + right) / 2, (top + bottom) / 2]
       WinGui.set_cursor_pos *center
       WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
       WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
     end
 
-    def wait_for_close
-      timeout(CLOSE_TIMEOUT) do
+    def wait_for_close(timeout =CLOSE_TIMEOUT )
+      timeout(timeout) do
         sleep SLEEP_DELAY while window_visible?
       end
     end
