@@ -16,10 +16,14 @@ class String
         [WinGui.const_get(:VK_OEM_COMMA)]
       when '.'
         [WinGui.const_get(:VK_OEM_PERIOD)]
+      when ';'
+        [WinGui.const_get(:VK_OEM_1)]
       when ':'
         [:VK_SHIFT, :VK_OEM_1].map {|s| WinGui.const_get s}
       when "\\"
         [WinGui.const_get(:VK_OEM_102)]
+      when "\n"
+        [WinGui.const_get(:VK_RETURN)]
       else
         raise "Can't convert unknown character: #{self}"
     end

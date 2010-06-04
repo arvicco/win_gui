@@ -21,16 +21,20 @@ module WinGuiTest
         ' '.to_key.should == " ".unpack('C')
       end
 
-      it 'transforms .,:\\ into [equivalent key code]' do
+      it 'transforms \n into [VK_RETURN]' do
+        "\n".to_key.should == [VK_RETURN]
+      end
+
+      it 'transforms .,:;\\ into [equivalent key code]' do
         ','.to_key.should == [VK_OEM_COMMA]
         '.'.to_key.should == [VK_OEM_PERIOD]
         ':'.to_key.should == [VK_SHIFT, VK_OEM_1]
+        ';'.to_key.should == [VK_OEM_1]
         "\\".to_key.should == [VK_OEM_102]
       end
 
       it 'raises error if char is not implemented punctuation' do
         ('!'..'+').each {|char| lambda {char.to_key}.should raise_error ERROR_CONVERSION }
-        (';'..'@').each {|char| lambda {char.to_key}.should raise_error ERROR_CONVERSION }
         (']'..'`').each {|char| lambda {char.to_key}.should raise_error ERROR_CONVERSION }
         ('{'..'~').each {|char| lambda {char.to_key}.should raise_error ERROR_CONVERSION }
         ['-', '/', '['].each {|char| lambda {char.to_key}.should raise_error ERROR_CONVERSION }

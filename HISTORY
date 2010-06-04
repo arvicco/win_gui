@@ -29,3 +29,7 @@
 == 0.2.6 / 2010-06-04
 
 * Docs improved
+
+== 0.2.7 / 2010-06-04
+
+* more punctuation added to String#to_key
