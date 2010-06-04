@@ -103,34 +103,6 @@ module WinGui
       end
     end
 
-#    def click(id, which = :left, where = :center)
-#      h = child(id).handle
-#
-#      rectangle = [0, 0, 0, 0].pack 'LLLL'
-#      get_window_rect h, rectangle
-#      left, top, right, bottom = rectangle.unpack 'LLLL'
-#
-#      point = case where
-#      when Array
-#        where
-#      when :random
-#        [left + rand(right - left), top + rand(bottom - top)]
-#      else
-#        point = [(left + right) / 2, (top + bottom) / 2]
-#      end
-#
-#      set_cursor_pos *point
-#
-#      down, up = (:left == which) ?
-#        [MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP] :
-#        [MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP]
-#
-#      mouse_event down, 0, 0, 0, 0
-#      mouse_event up, 0, 0, 0, 0
-#
-#      return point
-#    end
-
     # Waits for this window to close with timeout (default CLOSE_TIMEOUT).
     #
     def wait_for_close(timeout=CLOSE_TIMEOUT )

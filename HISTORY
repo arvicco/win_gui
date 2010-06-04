@@ -37,3 +37,7 @@
 == 0.2.8 / 2010-06-04
 
 * Window#click api improved with position and mouse_button type
+
+== 0.2.9 / 2010-06-04
+
+* Window: Full feature parity with Book code
