@@ -85,45 +85,14 @@ module WinGuiTest
         Window.top_level( title: IMPOSSIBLE, timeout: 0.5).should == nil
         (Time.now - start).should be_close 0.5, 0.02
       end
-    end
+
+      it 'raises exception if asked to' do
+        expect{ Window.top_level( title: IMPOSSIBLE, raise: "Horror!")}.to raise_error "Horror!"
+      end
+    end # describe .top_level
 
     describe '#child' do
       spec { use { @child = @app.child(title: "Title", class: "Class", id: 0)  }}
-
-      it 'finds child window by title and returns it as a Window object' do
-        pending 'No named children in test app!'
-        child = @app.child( title: WIN_TITLE)
-        child.should == nil #
-      end
-
-      it 'finds child window with given ID and returns it as a Window object' do
-        pending 'No controls with ID in test app!'
-        child = @app.child( title: WIN_TITLE)
-        child.should == nil #
-      end
-
-      it 'finds child window by class and returns it as a Window object (no timeout)' do
-        child = @app.child( class: TEXTAREA_CLASS)
-        child.should_not == nil
-        @app.child?(child.handle).should == true
-      end
-
-      it 'finds child window by class and returns it as a Window object (with timeout)' do
-#        p @app.find_window_ex(0, TEXTAREA_CLASS, nil)
-#        p @app.find_window_ex(0, STATUSBAR_CLASS, nil)
-        child = @app.child( class: TEXTAREA_CLASS, timeout: 0.5)
-        child.should_not == nil
-        @app.child?(child.handle).should == true
-        child = @app.child( class: STATUSBAR_CLASS, timeout: 0.5)
-        child.should_not == nil
-        @app.child?(child.handle).should == true
-      end
-
-      it 'finds ANY child window without args' do
-        use { @child = @app.child() }
-        @child.should_not == nil
-        @app.child?(@child.handle).should == true
-      end
 
       it 'returns nil immediately if specific child not found' do
         start = Time.now
@@ -137,8 +106,54 @@ module WinGuiTest
         (Time.now - start).should be_close 0.5, 0.02
       end
 
-      it 'substitutes & for _ when searching by title ("&Yes" type controls)' # Why?
-    end
+      it 'finds ANY child window without args' do
+        use { @child = @app.child() }
+        @child.should_not == nil
+        @app.child?(@child.handle).should == true
+      end
+
+      it 'finds child window by class and returns it as a Window object (no timeout)' do
+        child = @app.child( class: TEXTAREA_CLASS)
+        child.should_not == nil
+        @app.child?(child.handle).should == true
+      end
+
+      it 'finds child window by class and returns it as a Window object (with timeout)' do
+#        p @app.find_window_ex(0, TEXTAREA_CLASS, nil)
+#        p @app.find_window_ex(0, STATUSBAR_CLASS, nil)
+        child = @app.child( class: TEXTAREA_CLASS, timeout: 0.5)
+        child.should_not == nil
+
+        @app.child?(child.handle).should == true
+        child = @app.child( class: STATUSBAR_CLASS, timeout: 0.5)
+        child.should_not == nil
+        @app.child?(child.handle).should == true
+      end
+
+      it 'finds child with specific text and returns it as a Window object' do
+        with_dialog(:save) do |dialog|
+#          @dialog.children.each{|child| puts "#{child.handle}, #{child.class_name}, #{child.window_text}"}
+          child = dialog.child( title: "Cancel")
+          child.should_not == nil
+          dialog.child?(child.handle).should == true
+          child.get_dlg_ctrl_id.should == IDCANCEL
+
+          child = dialog.child( title: "&Save")
+          child.should_not == nil
+          dialog.child?(child.handle).should == true
+          child.get_dlg_ctrl_id.should == IDOK
+        end
+      end
+
+      it 'finds child control with a given ID and returns it as a Window object' do
+        with_dialog(:save) do |dialog|
+          child = dialog.child( id: IDCANCEL)
+          child.should_not == nil
+          dialog.child?(child.handle).should == true
+          child.text.should == "Cancel"
+        end
+      end
+    end # describe child
 
     describe '#children' do
       spec { use { children = @app.children  }}
@@ -151,26 +166,33 @@ module WinGuiTest
         children.each{|child| child?(@app.handle, child.handle).should == true }
         children.last.class_name.should == TEXTAREA_CLASS
       end
+    end # describe #children
 
-#      it 'finds child window(control) by name' do
-#        pending 'Need to find control with short name'
-#        @app.child(TEXTAREA_TEXT).should_not == nil
-#      end
-#
-#      it 'finds child window(control) by control ID' do
-#        pending 'Need to find some control ID'
-#        @app.child(TEXTAREA_ID).should_not == nil
-#      end
-#
-#      it 'raises error if wrong control is given' do
-#        expect { @app.child('Impossible Control')}.to raise_error "Control 'Impossible Control' not found"
-#      end
-#      it 'substitutes & for _ when searching by title ("&Yes" type controls)'
+    describe '#click' do
+      it 'emulates clicking of the control identified by id, returns true' do
+        with_dialog(:save) do |dialog|
+          dialog.click(id: IDCANCEL).should == true
+          sleep 0.5
+          dialog.window?.should == false
+        end
+      end
 
-    end
+      it 'emulates clicking of the control identified by title, returns true' do
+        with_dialog(:save) do |dialog|
+          dialog.click(title: "Cancel").should == true
+          sleep 0.5
+          dialog.window?.should == false
+        end
+      end
 
-    context '#click' do
-      it 'emulates clicking of the control identified by id'
-    end
+      it 'returns false if the specified control was not found' do
+        with_dialog(:save) do |dialog|
+          dialog.click(title: "Shpancel").should == false
+          dialog.click(id: 66).should == false
+          sleep 0.5
+          dialog.window?.should == true
+        end
+      end
+    end # describe #click
   end
 end

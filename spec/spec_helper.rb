@@ -75,7 +75,10 @@ module WinGuiTest
     while @test_app && find_window(nil, WIN_TITLE)
       @test_app.close
       # Dealing with closing confirmation modal dialog
-      keystroke("N") if Window.top_level( title: "Steganos Locknote", timeout: SLEEP_DELAY*5)
+      if dialog = dialog( title: "Steganos Locknote", timeout: SLEEP_DELAY)
+        dialog.set_foreground_window
+        keystroke("N")
+      end
     end
     @test_app = nil
   end
@@ -87,4 +90,22 @@ module WinGuiTest
     close_test_app
   end
 
+  def with_dialog(type=:close)
+    case type
+      when :close
+        keystroke('A')
+        @app.close
+        title, key = "Steganos Locknote", "N"
+      when :save
+        keystroke(VK_ALT, 'F', 'A')
+        title, key = "Save As", VK_ESCAPE
+    end
+    sleep 0.01 until dialog = Window.top_level(title: title)
+    yield dialog
+    while dialog.window?
+      dialog.set_foreground_window
+      keystroke(key)
+      sleep 0.01
+    end
+  end
 end

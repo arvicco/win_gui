@@ -11,23 +11,28 @@ module WinGui
 
     attr_reader :handle
 
+    # Looks up window handle using code specified in attached block (either with or without :timeout)
+    # Returns either Window instance (for a found handle) or nil if nothing found
     # Private method to dry up other window lookup methods
+    # :yields:
+    #
     def self.lookup_window(opts)
       # Need this to avoid handle considered local in begin..end block
       handle = yield
       if opts[:timeout]
         begin
           timeout(opts[:timeout]) do
-            sleep SLEEP_DELAY until (handle = yield)
+            sleep SLEEP_DELAY until handle = yield
           end
         rescue TimeoutError
           nil
         end
       end
+      raise opts[:raise] if opts[:raise] && !handle
       Window.new(handle) if handle
     end
 
-    # Finds top level window by title/class, returns wrapped Window object or nil.
+    # Find top level window by title/class, returns wrapped Window object or nil.
     # If timeout option given, waits for window to appear within timeout, returns nil if it didn't
     # Options:
     # :title:: window title
@@ -37,25 +42,32 @@ module WinGui
       lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
     end
 
-    # Find DIRECT child window (control) by title, window class, or control ID:
+    # Find DIRECT child window (control) by either control ID or window class/title.
     def child(opts={})
       self.class.lookup_window(opts) do
         opts[:id] ? get_dlg_item(opts[:id]) : find_window_ex(0, opts[:class], opts[:title])
       end
     end
 
-    # returns array of Windows that are descendants (not only DIRECT children) of a given Window
+    # Return array of Windows that are descendants (not only DIRECT children) of a given Window
     def children
       enum_child_windows.map{|child_handle| Window.new child_handle}
     end
 
-    # emulate click of the control identified by id
-    def click(id)
-      left, top, right, bottom = child(id).get_window_rect
-      center = [(left + right) / 2, (top + bottom) / 2]
-      WinGui.set_cursor_pos *center
-      WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
-      WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
+    # Emulate click of the control identified by opts (:id, :title, :class)
+    # Return true if click was presumably successful, false if it failed (control was not found)
+    def click(opts={})
+      control = child(opts)
+      if control
+        left, top, right, bottom = control.get_window_rect
+        center = [(left + right) / 2, (top + bottom) / 2]
+        WinGui.set_cursor_pos *center
+        WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
+        WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
+        true
+      else
+        false
+      end
     end
 
     def wait_for_close(timeout=CLOSE_TIMEOUT )
@@ -70,7 +82,7 @@ module WinGui
     # If you want to invoke this function, you can do it like this:
     #   window.close_window
     def close
-      WinGui.shut_window(@handle)
+      shut_window
     end
 
     # Since Window instances wrap actual window handles, they should support WinGui functions

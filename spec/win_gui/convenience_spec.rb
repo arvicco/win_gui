@@ -7,38 +7,43 @@ module WinGuiTest
     after(:each) { close_test_app }
 
     describe '#dialog' do
-      # Open "Save as" modal dialog
-      before(:each){ keystroke(VK_ALT, 'F', 'A') }
-      # Close modal dialog if it is opened
-      after(:each) { keystroke(VK_ESCAPE) if Window.top_level( title: "Save As", timeout: 0.1) }
-
       it 'returns top-level dialog window with given title if no block attached' do
-        dialog_window = dialog(title: DIALOG_TITLE, timeout: 0.1)
-        dialog_window.should_not == nil
-        dialog_window.should be_a Window
-        dialog_window.text.should == DIALOG_TITLE
-      end
-
-      it 'yields found dialog window to block if block is attached' do
-        dialog(title: DIALOG_TITLE) do |dialog_window|
+        with_dialog(:save) do
+          dialog_window = dialog(title: DIALOG_TITLE, timeout: 0.1)
           dialog_window.should_not == nil
           dialog_window.should be_a Window
           dialog_window.text.should == DIALOG_TITLE
         end
       end
 
+      it 'yields found dialog window to block if block is attached' do
+        with_dialog(:save) do
+          dialog(title: DIALOG_TITLE) do |dialog_window|
+            dialog_window.should_not == nil
+            dialog_window.should be_a Window
+            dialog_window.text.should == DIALOG_TITLE
+          end
+        end
+      end
+
       it 'returns nil if there is no dialog with given title' do
-        dialog(title: IMPOSSIBLE, timeout: 0.1).should == nil
+        with_dialog(:save) do
+          dialog(title: IMPOSSIBLE, timeout: 0.1).should == nil
+        end
       end
 
       it 'yields nil to attached block if no dialog found' do
-        dialog(title: IMPOSSIBLE, timeout: 0.1) do |dialog_window|
-          dialog_window.should == nil
+        with_dialog(:save) do
+          dialog(title: IMPOSSIBLE, timeout: 0.1) do |dialog_window|
+            dialog_window.should == nil
+          end
         end
       end
 
       it 'considers all arguments optional' do
-        use { dialog_window = dialog() }
+        with_dialog(:save) do
+          use { dialog_window = dialog() }
+        end
       end
     end # describe dialog
 
@@ -64,6 +69,5 @@ module WinGuiTest
       end # describe '#type_in'
 
     end # Input methods
-
-  end
+  end # Convenience methods
 end
