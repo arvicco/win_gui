@@ -41,3 +41,7 @@
 == 0.2.9 / 2010-06-04
 
 * Window: Full feature parity with Book code
+
+== 0.2.10 / 2010-06-04
+
+* Window#child now searches all descendant windows with :indirect option

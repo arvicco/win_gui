@@ -43,15 +43,7 @@ module WinGuiTest
         @app.window_thread_process_id.should be_an Array
         @app.enum_child_windows.should be_an Array
       end
-
-      it 'has class_name and text properties (derived from WinGui function calls)' do
-        @app.class_name.should == WIN_CLASS
-        # window_text propery accessed via GetWindowText
-        @app.window_text.should == WIN_TITLE
-        # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
-        @app.text.should == WIN_TITLE
-      end
-    end
+   end
 
     context 'derived properties' do
       it 'has handle property equal to underlying window handle' do
@@ -59,7 +51,13 @@ module WinGuiTest
         any.handle.should == any_handle
       end
 
-      it 'has title property equal to underlying window text' do
+      it 'has class_name and text/title properties (derived from WinGui function calls)' do
+        @app.class_name.should == WIN_CLASS
+        # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
+        @app.text.should == WIN_TITLE
+        # window_text propery accessed via GetWindowText
+        @app.window_text.should == WIN_TITLE
+        # title property is just an alias for window_text
         @app.title.should == WIN_TITLE
       end
 
@@ -67,6 +65,10 @@ module WinGuiTest
         thread = @app.thread
         process = @app.process
         [thread, process].should == get_window_thread_process_id(@app.handle)
+      end
+
+      it 'has id property that only makes sense for controls' do
+        use{ @app.id } 
       end
     end
 
@@ -144,7 +146,6 @@ module WinGuiTest
 
       it 'finds child with specific text and returns it as a Window object' do
         with_dialog(:save) do |dialog|
-#          @dialog.children.each{|child| puts "#{child.handle}, #{child.class_name}, #{child.window_text}"}
           child = dialog.child( title: "Cancel")
           child.should_not == nil
           dialog.child?(child.handle).should == true
@@ -165,6 +166,47 @@ module WinGuiTest
           child.text.should == "Cancel"
         end
       end
+
+      context 'indirect child' do
+        it 'returns nil if specified child not found' do
+          @app.child( title: IMPOSSIBLE, indirect: true).should == nil
+        end
+
+        it 'finds ANY child window without other args' do
+          use { @child = @app.child(indirect: true) }
+          @child.should_not == nil
+          @app.child?(@child.handle).should == true
+        end
+
+        it 'finds child window by class' do
+          child = @app.child( class: TEXTAREA_CLASS, indirect: true)
+          child.should_not == nil
+          @app.child?(child.handle).should == true
+        end
+
+        it 'finds child with specific text' do
+          with_dialog(:save) do |dialog|
+            child = dialog.child( title: "Cancel", indirect: true)
+            child.should_not == nil
+            dialog.child?(child.handle).should == true
+            child.id.should == IDCANCEL
+
+            child = dialog.child( title: "&Save", indirect: true)
+            child.should_not == nil
+            dialog.child?(child.handle).should == true
+            child.id.should == IDOK
+          end
+        end
+
+        it 'finds child control with a given ID ' do
+          with_dialog(:save) do |dialog|
+            child = dialog.child( id: IDCANCEL, indirect: true)
+            child.should_not == nil
+            dialog.child?(child.handle).should == true
+            child.text.should == "Cancel"
+          end
+        end
+      end # context indirect
     end # describe child
 
     describe '#children' do
@@ -181,6 +223,13 @@ module WinGuiTest
     end # describe #children
 
     describe '#click' do
+#      it 'tests' do
+#        with_dialog(:save) do |dialog|
+#          dialog.children.each{|child| puts "#{child.handle}, #{child.class_name}, #{child.window_text}, #{dialog.child?(child.handle)}"}
+#          true.should == false
+#        end
+#      end
+
       it 'emulates left click of the control identified by id, returns click coords' do
         with_dialog(:save) do |dialog|
           point = dialog.click(id: IDCANCEL)

@@ -46,12 +46,25 @@ module WinGui
     # :id:: integer control id (such as IDOK, IDCANCEL, etc)
     # :title:: window title
     # :class:: window class
+    # :indirect:: search all descendants, not only direct children
     # :timeout:: timeout (seconds)
     # :raise:: raise this exception instead of returning nil if nothing found
+    # TODO: add the ability to nail indirect children as well
     #
     def child(opts={})
-      self.class.lookup_window(opts) do
-        opts[:id] ? get_dlg_item(opts[:id]) : find_window_ex(0, opts[:class], opts[:title])
+      if opts[:indirect]
+        self.class.lookup_window opts do
+          found = children.find do |child|
+            (opts[:id] ? child.id == opts[:id] : true) &&
+                    (opts[:class] ? child.class_name == opts[:class] : true) &&
+                    (opts[:title] ? child.title == opts[:title] : true)
+          end
+          found.handle if found
+        end
+      else
+        self.class.lookup_window opts do
+          opts[:id] ? get_dlg_item(opts[:id]) : find_window_ex(0, opts[:class], opts[:title])
+        end
       end
     end
 
@@ -131,6 +144,11 @@ module WinGui
 
     def process
       get_window_thread_process_id.last
+    end
+
+    # Control ID associated with the window (only makes sense for controls)
+    def id
+      get_dlg_ctrl_id
     end
 
     # Since Window instances wrap actual window handles, they should directly support Win32 API functions
