@@ -14,11 +14,6 @@ module WinGuiTest
     end
 
     context 'manipulating' do
-      it 'has handle property equal to underlying window handle' do
-        any = Window.new any_handle
-        any.handle.should == any_handle
-      end
-
       it 'closes when asked nicely' do
         @app.close
         sleep SLEEP_DELAY # needed to ensure window had enough time to close down
@@ -55,6 +50,23 @@ module WinGuiTest
         @app.window_text.should == WIN_TITLE
         # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
         @app.text.should == WIN_TITLE
+      end
+    end
+
+    context 'derived properties' do
+      it 'has handle property equal to underlying window handle' do
+        any = Window.new any_handle
+        any.handle.should == any_handle
+      end
+
+      it 'has title property equal to underlying window text' do
+        @app.title.should == WIN_TITLE
+      end
+
+      it 'has thread and process properties derived from get_window_thread_process_id' do
+        thread = @app.thread
+        process = @app.process
+        [thread, process].should == get_window_thread_process_id(@app.handle)
       end
     end
 

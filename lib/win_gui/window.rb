@@ -5,8 +5,6 @@ module WinGui
 
     def initialize(handle)
       @handle = handle
-#      puts "Window #{handle} created "
-#      p self.class.ancestors
     end
 
     attr_reader :handle
@@ -119,6 +117,20 @@ module WinGui
     #
     def close
       shut_window
+    end
+
+    # Alias for [get_]window_text
+    #
+    def title
+      get_window_text
+    end
+
+    def thread
+      get_window_thread_process_id.first
+    end
+
+    def process
+      get_window_thread_process_id.last
     end
 
     # Since Window instances wrap actual window handles, they should directly support Win32 API functions
