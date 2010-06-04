@@ -33,3 +33,7 @@
 == 0.2.7 / 2010-06-04
 
 * more punctuation added to String#to_key
+
+== 0.2.8 / 2010-06-04
+
+* Window#click api improved with position and mouse_button type

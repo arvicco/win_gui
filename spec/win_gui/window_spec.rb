@@ -169,27 +169,47 @@ module WinGuiTest
     end # describe #children
 
     describe '#click' do
-      it 'emulates clicking of the control identified by id, returns true' do
+      it 'emulates left click of the control identified by id, returns click coords' do
         with_dialog(:save) do |dialog|
-          dialog.click(id: IDCANCEL).should == true
-          sleep 0.5
+          point = dialog.click(id: IDCANCEL)
+          point.should be_an Array
+          sleep 0.3
           dialog.window?.should == false
         end
       end
 
-      it 'emulates clicking of the control identified by title, returns true' do
+      it 'emulates left click of the control identified by title, returns click coords' do
         with_dialog(:save) do |dialog|
-          dialog.click(title: "Cancel").should == true
-          sleep 0.5
+          point = dialog.click(title: "Cancel")
+          point.should be_an Array
+          sleep 0.3
           dialog.window?.should == false
         end
       end
 
-      it 'returns false if the specified control was not found' do
+      it 'emulates right click of the control identified by id, returns click coords' do
         with_dialog(:save) do |dialog|
-          dialog.click(title: "Shpancel").should == false
-          dialog.click(id: 66).should == false
-          sleep 0.5
+          point = dialog.click(id: IDCANCEL, mouse_button: :right)
+          point.should be_an Array
+          sleep 0.3
+          dialog.window?.should == true
+        end
+      end
+
+      it 'emulates right click of the control identified by title, returns click coords' do
+        with_dialog(:save) do |dialog|
+          point = dialog.click(title: "Cancel", mouse_button: :right)
+          point.should be_an Array
+          sleep 0.3
+          dialog.window?.should == true
+        end
+      end
+
+      it 'returns nil if the specified control was not found' do
+        with_dialog(:save) do |dialog|
+          dialog.click(title: "Shpancel").should == nil
+          dialog.click(id: 66).should == nil
+          sleep 0.3
           dialog.window?.should == true
         end
       end

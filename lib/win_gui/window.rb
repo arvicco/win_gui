@@ -63,22 +63,73 @@ module WinGui
       enum_child_windows.map{|child_handle| Window.new child_handle}
     end
 
-    # Emulates click of the control identified by opts (:id, :title, :class)
-    # Return true if click was presumably successful, false if it failed (control was not found)
+    # Emulates click of the control identified by opts (:id, :title, :class).
+    # Beware of keyboard shortcuts in button titles! So, use "&Yes" instead of just "Yes".
+    # Returns screen coordinates of click point if successful, nil if control was not found
+    # :id:: integer control id (such as IDOK, IDCANCEL, etc)
+    # :title:: window title
+    # :class:: window class
+    # :raise:: raise this exception instead of returning nil if nothing found
+    # :position/point/where:: location where the click is to be applied - default :center
+    # :mouse_button/button/which:: mouse button which to click - default :right
     #
     def click(opts={})
       control = child(opts)
       if control
         left, top, right, bottom = control.get_window_rect
-        center = [(left + right) / 2, (top + bottom) / 2]
-        WinGui.set_cursor_pos *center
-        WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
-        WinGui.mouse_event WinGui::MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
-        true
+
+        where = opts[:point] || opts[:where] || opts[:position]
+        point = case where
+          when Array
+            where                                                  # Explicit screen coords
+          when :random
+            [left + rand(right - left), top + rand(bottom - top)]  # Random point within control window
+          else
+            [(left + right) / 2, (top + bottom) / 2]               # Center of a control window
+        end
+
+        WinGui.set_cursor_pos *point
+
+        button = opts[:mouse_button] || opts[:mouse] || opts[:which]
+        down, up =  (button == :right) ?
+                [WinGui::MOUSEEVENTF_RIGHTDOWN, WinGui::MOUSEEVENTF_RIGHTUP] :
+                [WinGui::MOUSEEVENTF_LEFTDOWN, WinGui::MOUSEEVENTF_LEFTUP]
+
+        WinGui.mouse_event down, 0, 0, 0, 0
+        WinGui.mouse_event up, 0, 0, 0, 0
+        point
       else
-        false
+        nil
       end
     end
+
+#    def click(id, which = :left, where = :center)
+#      h = child(id).handle
+#
+#      rectangle = [0, 0, 0, 0].pack 'LLLL'
+#      get_window_rect h, rectangle
+#      left, top, right, bottom = rectangle.unpack 'LLLL'
+#
+#      point = case where
+#      when Array
+#        where
+#      when :random
+#        [left + rand(right - left), top + rand(bottom - top)]
+#      else
+#        point = [(left + right) / 2, (top + bottom) / 2]
+#      end
+#
+#      set_cursor_pos *point
+#
+#      down, up = (:left == which) ?
+#        [MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP] :
+#        [MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP]
+#
+#      mouse_event down, 0, 0, 0, 0
+#      mouse_event up, 0, 0, 0, 0
+#
+#      return point
+#    end
 
     # Waits for this window to close with timeout (default CLOSE_TIMEOUT).
     #
