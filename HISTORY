@@ -49,3 +49,7 @@
 == 0.2.11 / 2010-06-18
 
 * App::find/launch operational
+
+== 0.2.12 / 2010-06-18
+
+* Test_app class changed to App from Window

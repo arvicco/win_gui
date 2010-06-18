@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper" )
 module WinGuiTest
 
   describe Window do
-    before(:each) { @app = launch_test_app }
+    before(:each) { @win = launch_test_app.main_window }
     after(:each){ close_test_app }
 
     context 'initializing' do
@@ -15,33 +15,33 @@ module WinGuiTest
 
     context 'manipulating' do
       it 'closes when asked nicely' do
-        @app.close
+        @win.close
         sleep SLEEP_DELAY # needed to ensure window had enough time to close down
         find_window(nil, WIN_TITLE).should == nil
       end
 
       it 'waits for window to disappear (NB: this happens before handle is released!)' do
         start = Time.now
-        @app.close
-        @app.wait_for_close
+        @win.close
+        @win.wait_for_close
         (Time.now - start).should be <= CLOSE_TIMEOUT
-        window_visible?(@app.handle).should be false
-        window?(@app.handle).should be false
+        window_visible?(@win.handle).should be false
+        window?(@win.handle).should be false
       end
     end
 
     context 'handle-related WinGui functions as instance methods' do
       it 'calls all WinGui functions as instance methods (with handle as implicit first argument)' do
-        @app.window?.should == true
-        @app.visible?.should == true
-        @app.foreground?.should == true
-        @app.maximized?.should == false
-        @app.minimized?.should == false
-        @app.child?(any_handle).should == false
+        @win.window?.should == true
+        @win.visible?.should == true
+        @win.foreground?.should == true
+        @win.maximized?.should == false
+        @win.minimized?.should == false
+        @win.child?(any_handle).should == false
 
-        @app.window_rect.should be_an Array
-        @app.window_thread_process_id.should be_an Array
-        @app.enum_child_windows.should be_an Array
+        @win.window_rect.should be_an Array
+        @win.window_thread_process_id.should be_an Array
+        @win.enum_child_windows.should be_an Array
       end
    end
 
@@ -52,35 +52,35 @@ module WinGuiTest
       end
 
       it 'has class_name and text/title properties (derived from WinGui function calls)' do
-        @app.class_name.should == WIN_CLASS
+        @win.class_name.should == WIN_CLASS
         # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
-        @app.text.should == WIN_TITLE
+        @win.text.should == WIN_TITLE
         # window_text propery accessed via GetWindowText
-        @app.window_text.should == WIN_TITLE
+        @win.window_text.should == WIN_TITLE
         # title property is just an alias for window_text
-        @app.title.should == WIN_TITLE
+        @win.title.should == WIN_TITLE
       end
 
       it 'has thread and process properties derived from get_window_thread_process_id' do
-        thread = @app.thread
-        process = @app.process
-        [thread, process].should == get_window_thread_process_id(@app.handle)
+        thread = @win.thread
+        process = @win.process
+        [thread, process].should == get_window_thread_process_id(@win.handle)
       end
 
       it 'has id property that only makes sense for controls' do
-        use{ @app.id } 
+        use{ @win.id }
       end
     end
 
     describe '::top_level' do
       it 'finds top-level window by title and wraps it in a Window object' do
-        win = Window.top_level( title: WIN_TITLE, timeout: 1)
-        win.handle.should == @app.handle
+        window = Window.top_level( title: WIN_TITLE, timeout: 1)
+        window.handle.should == @win.handle
       end
 
       it 'finds top-level window by class and wraps it in a Window object' do
-        win = Window.top_level( class: WIN_CLASS, timeout: 1)
-        win.handle.should == @app.handle
+        window = Window.top_level( class: WIN_CLASS, timeout: 1)
+        window.handle.should == @win.handle
       end
 
       it 'finds ANY top-level window without args and wraps it in a Window object' do
@@ -106,40 +106,40 @@ module WinGuiTest
     end # describe .top_level
 
     describe '#child' do
-      spec { use { @child = @app.child(title: "Title", class: "Class", id: 0)  }}
+      spec { use { @child = @win.child(title: "Title", class: "Class", id: 0)  }}
 
       it 'returns nil immediately if specific child not found' do
         start = Time.now
-        @app.child( title: IMPOSSIBLE).should == nil
+        @win.child( title: IMPOSSIBLE).should == nil
         (Time.now - start).should be_close 0, 0.02
       end
 
       it 'returns nil after timeout if specific child not found' do
         start = Time.now
-        @app.child( title: IMPOSSIBLE, timeout: 0.5).should == nil
+        @win.child( title: IMPOSSIBLE, timeout: 0.5).should == nil
         (Time.now - start).should be_close 0.5, 0.02
       end
 
       it 'finds ANY child window without args' do
-        use { @child = @app.child() }
+        use { @child = @win.child() }
         @child.should_not == nil
-        @app.child?(@child.handle).should == true
+        @win.child?(@child.handle).should == true
       end
 
       it 'finds child window by class and returns it as a Window object (no timeout)' do
-        child = @app.child( class: TEXTAREA_CLASS)
+        child = @win.child( class: TEXTAREA_CLASS)
         child.should_not == nil
-        @app.child?(child.handle).should == true
+        @win.child?(child.handle).should == true
       end
 
       it 'finds child window by class and returns it as a Window object (with timeout)' do
-        child = @app.child( class: TEXTAREA_CLASS, timeout: 0.5)
+        child = @win.child( class: TEXTAREA_CLASS, timeout: 0.5)
         child.should_not == nil
 
-        @app.child?(child.handle).should == true
-        child = @app.child( class: STATUSBAR_CLASS, timeout: 0.5)
+        @win.child?(child.handle).should == true
+        child = @win.child( class: STATUSBAR_CLASS, timeout: 0.5)
         child.should_not == nil
-        @app.child?(child.handle).should == true
+        @win.child?(child.handle).should == true
       end
 
       it 'finds child with specific text and returns it as a Window object' do
@@ -167,19 +167,19 @@ module WinGuiTest
 
       context 'indirect child' do
         it 'returns nil if specified child not found' do
-          @app.child( title: IMPOSSIBLE, indirect: true).should == nil
+          @win.child( title: IMPOSSIBLE, indirect: true).should == nil
         end
 
         it 'finds ANY child window without other args' do
-          use { @child = @app.child(indirect: true) }
+          use { @child = @win.child(indirect: true) }
           @child.should_not == nil
-          @app.child?(@child.handle).should == true
+          @win.child?(@child.handle).should == true
         end
 
         it 'finds child window by class' do
-          child = @app.child( class: TEXTAREA_CLASS, indirect: true)
+          child = @win.child( class: TEXTAREA_CLASS, indirect: true)
           child.should_not == nil
-          @app.child?(child.handle).should == true
+          @win.child?(child.handle).should == true
         end
 
         it 'finds child with specific text' do
@@ -208,14 +208,14 @@ module WinGuiTest
     end # describe child
 
     describe '#children' do
-      spec { use { children = @app.children  }}
+      spec { use { children = @win.children  }}
 
       it 'returns an array of Windows that are descendants (not only DIRECT children) of a given Window' do
-        children = @app.children
+        children = @win.children
         children.should be_a_kind_of Array
         children.should_not be_empty
         children.should have(2).elements
-        children.each{|child| child?(@app.handle, child.handle).should == true }
+        children.each{|child| child?(@win.handle, child.handle).should == true }
         children.last.class_name.should == TEXTAREA_CLASS
       end
     end # describe #children

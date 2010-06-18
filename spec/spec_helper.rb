@@ -30,8 +30,6 @@ module WinGuiTest
   KEY_DELAY = 0.001
   SLEEP_DELAY = 0.01
   APP_PATH = File.join(File.dirname(__FILE__), "../misc/locknote/LockNote.exe" )
-  APP_START = RUBY_PLATFORM =~ /cygwin/ ? "cmd /c start `cygpath -w #{APP_PATH}`" : "start #{APP_PATH}"
-  #          'start "" "' + APP_PATH + '"'
   DIALOG_TITLE = "Save As"
   WIN_TITLE = 'LockNote - Steganos LockNote'
   WIN_CLASS = 'ATL:00434098'
@@ -61,19 +59,12 @@ module WinGuiTest
   end
 
   def launch_test_app
-    system APP_START
-    @test_app = Window.top_level( title: WIN_TITLE, timeout: 10)
-
-#    def @test_app.textarea #define singleton method retrieving app's text area
-#      Window.new WinGui::find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
-#    end
-#
-    @test_app
+    #system APP_START
+    @test_app = App.launch( path: APP_PATH, title: WIN_TITLE, timeout: 1)
   end
 
   def close_test_app
-#    while @test_app || @test_app = Window.top_level( title: WIN_TITLE)
-      while @test_app && find_window(nil, WIN_TITLE)
+      while @test_app && @test_app.main_window.window?
       @test_app.close
       # Dealing with closing confirmation modal dialog
       if dialog = dialog( title: "Steganos Locknote", timeout: SLEEP_DELAY)
@@ -86,8 +77,7 @@ module WinGuiTest
 
   # Creates test app object and yields it back to the block
   def test_app
-    test_app = launch_test_app
-    yield test_app
+    yield launch_test_app
     close_test_app
   end
 
