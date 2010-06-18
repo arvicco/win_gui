@@ -45,3 +45,7 @@
 == 0.2.10 / 2010-06-04
 
 * Window#child now searches all descendant windows with :indirect option
+
+== 0.2.11 / 2010-06-18
+
+* App::find/launch operational

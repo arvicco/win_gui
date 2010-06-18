@@ -351,7 +351,7 @@ module GuiTest
       end
 
       it 'SW_SHOWNA displays the window in its current size and position (similar to SW_SHOW, but window is not activated)'
-      it 'SW_SHOWDEFAULT sets the show state based on the SW_ value specified in the STARTUPINFO structure passed to the CreateProcess function by the program that started the application'
+      it 'SW_SHOWDEFAULT sets the show state based on the SW_ value specified in the STARTUPINFO structure passed to the CreateProcess function by the program that started the App'
       it 'SW_FORCEMINIMIZE minimizes a window, even if the thread that owns the window is not responding - only Win2000/XP'
     end
 

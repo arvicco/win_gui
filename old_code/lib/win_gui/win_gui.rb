@@ -114,7 +114,7 @@ module WinGui
   ##
   # Returns the text of the specified window's title bar (if it has one).
   #   If the specified window is a control, the text of the control is copied. However, GetWindowText
-  #   cannot retrieve the text of a control in another application.
+  #   cannot retrieve the text of a control in another App.
   #
   # Original Parameters:
   #   win_handle (L) - Handle to the window and, indirectly, the class to which the window belongs.
@@ -195,7 +195,7 @@ module WinGui
   # Parameters:
   #   win_handle (L) - Handle to the window.
   #   cmd (I) - Specifies how the window is to be shown. This parameter is ignored the first time an
-  #     application calls ShowWindow, if the program that launched the application provides a STARTUPINFO
+  #     App calls ShowWindow, if the program that launched the App provides a STARTUPINFO
   #     structure. Otherwise, the first time ShowWindow is called, the value should be the value obtained
   #     by the WinMain function in its nCmdShow parameter. In subsequent calls, cmd may be:
   # SW_HIDE, SW_MAXIMIZE, SW_MINIMIZE, SW_SHOW, SW_SHOWMAXIMIZED, SW_SHOWMINIMIZED, SW_SHOWMINNOACTIVE,
@@ -214,7 +214,7 @@ module WinGui
   # Same as SW_SHOWNORMAL
   SW_NORMAL         = 1
   # Activates and displays a window. If the window is minimized or maximized, the system restores it to its
-  # original size and position. An application should specify this flag when displaying the window for the first time.
+  # original size and position. An App should specify this flag when displaying the window for the first time.
   SW_SHOWNORMAL     = 1
   # Activates the window and displays it as a minimized window.
   SW_SHOWMINIMIZED  = 2
@@ -233,10 +233,10 @@ module WinGui
   # Displays the window in its current size and position. Similar to SW_SHOW, except the window is not activated.
   SW_SHOWNA         = 8
   # Activates and displays the window. If the window is minimized or maximized, the system restores it to its original
-  # size and position. An application should specify this flag when restoring a minimized window.
+  # size and position. An App should specify this flag when restoring a minimized window.
   SW_RESTORE        = 9
   # Sets the show state based on the SW_ value specified in the STARTUPINFO structure  passed to the CreateProcess
-  # function by the program that started the application.
+  # function by the program that started the App.
   SW_SHOWDEFAULT    = 10
   # Windows 2000/XP: Minimizes a window, even if the thread that owns the window is not responding. Only use this
   # flag when minimizing windows from a different thread.
@@ -306,12 +306,12 @@ module WinGui
 
   ##
   # The EnumWindows function enumerates all top-level windows on the screen by passing the handle to
-  #   each window, in turn, to an application-defined callback function. EnumWindows continues until
+  #   each window, in turn, to an App-defined callback function. EnumWindows continues until
   #   the last top-level window is enumerated or the callback function returns FALSE.
   #
   # Original Parameters:
-  #   callback [K] - Pointer to an application-defined callback function (see EnumWindowsProc).
-  #   message [P] - Specifies an application-defined value(message) to be passed to the callback function.
+  #   callback [K] - Pointer to an App-defined callback function (see EnumWindowsProc).
+  #   message [P] - Specifies an App-defined value(message) to be passed to the callback function.
   # Original Return: Nonzero if the function succeeds, zero if the function fails. GetLastError for error info.
   #   If callback returns zero, the return value is also zero. In this case, the callback function should
   #   call SetLastError to obtain a meaningful error code to be returned to the caller of EnumWindows.
@@ -319,15 +319,15 @@ module WinGui
   # API improved to accept blocks (instead of callback objects) and message as a single arg
   #
   # New Parameters:
-  #   message [P] - Specifies an application-defined value(message) to be passed to the callback function.
-  #   block given to method invocation serves as an application-defined callback function (see EnumWindowsProc).
+  #   message [P] - Specifies an App-defined value(message) to be passed to the callback function.
+  #   block given to method invocation serves as an App-defined callback function (see EnumWindowsProc).
   # Returns: True if the function succeeds, false if the function fails. GetLastError for error info.
   #   If callback returns zero, the return value is also zero. In this case, the callback function should
   #   call SetLastError to obtain a meaningful error code to be returned to the caller of EnumWindows.
   #
   # Remarks: The EnumWindows function does not enumerate child windows, with the exception of a few top-level
   #   windows owned by the system that have the WS_CHILD style. This function is more reliable than calling
-  #   the GetWindow function in a loop. An application that calls GetWindow to perform this task risks being
+  #   the GetWindow function in a loop. An App that calls GetWindow to perform this task risks being
   #   caught in an infinite loop or referencing a handle to a window that has been destroyed.
   #
   #:call-seq:
@@ -340,8 +340,8 @@ module WinGui
   #
   # Original Parameters:
   #   parent (L) - Handle to the parent window whose child windows are to be enumerated.
-  #   callback [K] - Pointer to an application-defined callback function (see EnumWindowsProc).
-  #   message [P] - Specifies an application-defined value(message) to be passed to the callback function.
+  #   callback [K] - Pointer to an App-defined callback function (see EnumWindowsProc).
+  #   message [P] - Specifies an App-defined value(message) to be passed to the callback function.
   # Original Return: Not used (?!)
   #   If callback returns zero, the return value is also zero. In this case, the callback function should
   #   call SetLastError to obtain a meaningful error code to be returned to the caller of EnumWindows.
@@ -350,8 +350,8 @@ module WinGui
   # API improved to accept blocks (instead of callback objects) and two args: parent handle and message.
   # New Parameters:
   #   parent (L) - Handle to the parent window whose child windows are to be enumerated.
-  #   message (P) - Specifies an application-defined value(message) to be passed to the callback function.
-  #   block given to method invocation serves as an application-defined callback function (see EnumChildProc).
+  #   message (P) - Specifies an App-defined value(message) to be passed to the callback function.
+  #   block given to method invocation serves as an App-defined callback function (see EnumChildProc).
   #
   # Remarks:
   #   If a child window has created child windows of its own, EnumChildWindows enumerates those windows as well.

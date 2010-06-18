@@ -64,15 +64,16 @@ module WinGuiTest
     system APP_START
     @test_app = Window.top_level( title: WIN_TITLE, timeout: 10)
 
-    def @test_app.textarea #define singleton method retrieving app's text area
-      Window.new WinGui::find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
-    end
-
+#    def @test_app.textarea #define singleton method retrieving app's text area
+#      Window.new WinGui::find_window_ex(self.handle, 0, TEXTAREA_CLASS, nil)
+#    end
+#
     @test_app
   end
 
   def close_test_app
-    while @test_app && find_window(nil, WIN_TITLE)
+#    while @test_app || @test_app = Window.top_level( title: WIN_TITLE)
+      while @test_app && find_window(nil, WIN_TITLE)
       @test_app.close
       # Dealing with closing confirmation modal dialog
       if dialog = dialog( title: "Steganos Locknote", timeout: SLEEP_DELAY)

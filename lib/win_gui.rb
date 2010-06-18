@@ -18,6 +18,11 @@ module WinGui
       Pathname.glob(name.to_s).sort.each {|rb| require rb}
     end
   end
+
+  module Errors                             # :nodoc:
+    class InitError < RuntimeError          # :nodoc:
+    end
+  end
 end  # module WinGui
 
 # Require all ruby source files located under directory lib/win_gui

@@ -16,7 +16,7 @@ class TextNote < Note
   @@app = TextNote
   
   def initialize(name = 'Untitled', with_options = {})
-    tell.application('TextEdit').activate!
+    tell.App('TextEdit').activate!
   end
 
   DontSave = 2
@@ -25,7 +25,7 @@ class TextNote < Note
     menu 'TextEdit', 'Quit TextEdit'
     
     tell.
-      application('System Events').
+      App('System Events').
       process('TextEdit').
       window('Untitled').
       sheet(1).
@@ -34,7 +34,7 @@ class TextNote < Note
 
   def running?
     tell.
-      application('System Events').
+      App('System Events').
       process!('TextEdit') == 'TextEdit' #(2)
   end
 end
@@ -45,7 +45,7 @@ end
 class TextNote  
   def text
     tell.
-      application('System Events').
+      App('System Events').
       process('TextEdit').
       window('Untitled').
       scroll_area(1).
@@ -56,7 +56,7 @@ class TextNote
   def text=(new_text)
     select_all
     
-    tell.application('System Events').
+    tell.App('System Events').
       process('TextEdit').
       window('Untitled') do
         new_text.split(//).each {|k| keystroke! k}
@@ -69,7 +69,7 @@ end
 
 class TextNote
   def menu(name, item, wait = false)
-    tell.application('System Events').
+    tell.App('System Events').
       process('TextEdit').
       menu_bar(1).
       menu_bar_item(name).

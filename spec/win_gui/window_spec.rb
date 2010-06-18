@@ -36,7 +36,7 @@ module WinGuiTest
         @app.visible?.should == true
         @app.foreground?.should == true
         @app.maximized?.should == false
-        @app.maximized?.should == false
+        @app.minimized?.should == false
         @app.child?(any_handle).should == false
 
         @app.window_rect.should be_an Array
@@ -72,7 +72,7 @@ module WinGuiTest
       end
     end
 
-    describe '.top_level' do
+    describe '::top_level' do
       it 'finds top-level window by title and wraps it in a Window object' do
         win = Window.top_level( title: WIN_TITLE, timeout: 1)
         win.handle.should == @app.handle
@@ -84,8 +84,8 @@ module WinGuiTest
       end
 
       it 'finds ANY top-level window without args and wraps it in a Window object' do
-        use { @win = Window.top_level() }
-        Window.should === @win
+        use { @window = Window.top_level() }
+        @window.should be_a Window
       end
 
       it 'returns nil immediately if top-level window with given title not found' do
@@ -96,8 +96,8 @@ module WinGuiTest
 
       it 'returns nil after timeout if top-level window with given title not found' do
         start = Time.now
-        Window.top_level( title: IMPOSSIBLE, timeout: 0.5).should == nil
-        (Time.now - start).should be_close 0.5, 0.02
+        Window.top_level( title: IMPOSSIBLE, timeout: 0.3).should == nil
+        (Time.now - start).should be_close 0.3, 0.02
       end
 
       it 'raises exception if asked to' do
@@ -133,8 +133,6 @@ module WinGuiTest
       end
 
       it 'finds child window by class and returns it as a Window object (with timeout)' do
-#        p @app.find_window_ex(0, TEXTAREA_CLASS, nil)
-#        p @app.find_window_ex(0, STATUSBAR_CLASS, nil)
         child = @app.child( class: TEXTAREA_CLASS, timeout: 0.5)
         child.should_not == nil
 

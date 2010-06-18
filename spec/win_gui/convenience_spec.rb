@@ -54,9 +54,10 @@ module WinGuiTest
         it 'emulates combinations of keys pressed (Ctrl+Alt+P+M, etc)' do
           keystroke(VK_CONTROL, 'A')
           keystroke(VK_SPACE)
-          @app.textarea.text.should.should == ' '
+          textarea = @app.child(class: TEXTAREA_CLASS)
+          textarea.text.should.should == ' '
           keystroke('1', '2', 'A', 'B'.ord)
-          @app.textarea.text.should.should == ' 12ab'
+          textarea.text.should.should == ' 12ab'
         end
       end # describe '#keystroke'
 
@@ -64,7 +65,8 @@ module WinGuiTest
         it 'types text message into the window holding the focus' do
           text = '1234 abcdefg'
           type_in(text)
-          @app.textarea.text.should =~ Regexp.new(text)
+          textarea = @app.child(class: TEXTAREA_CLASS)
+          textarea.text.should =~ Regexp.new(text)
         end
       end # describe '#type_in'
 

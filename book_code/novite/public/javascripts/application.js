@@ -6,5 +6,5 @@
  * We make no guarantees that this code is fit for any purpose. 
  * Visit http://www.pragmaticprogrammer.com/titles/idgtr for more book information.
 ***/
-// Place your application-specific JavaScript functions and classes here
+// Place your App-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults

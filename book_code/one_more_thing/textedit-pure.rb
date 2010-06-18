@@ -12,9 +12,9 @@ include AppleScript
 
 RightArrow = 124
 
-tell.application("TextEdit").activate! #(1)
+tell.App("TextEdit").activate! #(1)
 
-tell.application("System Events").
+tell.App("System Events").
   process("TextEdit").
   menu_bar(1).
   menu_bar_item("Edit"). #(2)

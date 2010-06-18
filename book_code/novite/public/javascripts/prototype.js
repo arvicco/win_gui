@@ -1166,7 +1166,7 @@ Ajax.Base = Class.create({
     this.options = {
       method:       'post',
       asynchronous: true,
-      contentType:  'application/x-www-form-urlencoded',
+      contentType:  'App/x-www-form-urlencoded',
       encoding:     'UTF-8',
       parameters:   '',
       evalJSON:     true,
@@ -1249,7 +1249,7 @@ Ajax.Request = Class.create(Ajax.Base, {
     var headers = {
       'X-Requested-With': 'XMLHttpRequest',
       'X-Prototype-Version': Prototype.Version,
-      'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'
+      'Accept': 'text/javascript, text/html, App/xml, text/xml, */*'
     };
 
     if (this.method == 'post') {
@@ -1307,7 +1307,7 @@ Ajax.Request = Class.create(Ajax.Base, {
       var contentType = response.getHeader('Content-type');
       if (this.options.evalJS == 'force'
           || (this.options.evalJS && contentType
-          && contentType.match(/^\s*(text|application)\/(x-)?(java|ecma)script(;.*)?\s*$/i)))
+          && contentType.match(/^\s*(text|App)\/(x-)?(java|ecma)script(;.*)?\s*$/i)))
         this.evalResponse();
     }
 
@@ -1408,7 +1408,7 @@ Ajax.Response = Class.create({
   _getResponseJSON: function() {
     var options = this.request.options;
     if (!options.evalJSON || (options.evalJSON != 'force' &&
-      !(this.getHeader('Content-type') || '').include('application/json')) ||
+      !(this.getHeader('Content-type') || '').include('App/json')) ||
         this.responseText.blank())
           return null;
     try {
