@@ -5,6 +5,7 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
 require 'version'
+require 'date'
 
 Gem::Specification.new do |gem|
   gem.name        = "win_gui"

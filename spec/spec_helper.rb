@@ -33,9 +33,6 @@ module WinGuiTest
   DIALOG_TITLE = "Save As"
   WIN_TITLE = 'LockNote - Steganos LockNote'
   WIN_CLASS = 'ATL:00434098'
-  WIN_RECT = [710, 400, 1210, 800]
-  MAX_RECT = [-4, -4, 1924, 1204]  # on my 1920x1200 display
-  MIN_RECT = [-32000, -32000, -31840, -31976]
   TEXTAREA_CLASS = 'ATL:00434310'
   STATUSBAR_CLASS = 'msctls_statusbar32'
   IMPOSSIBLE = 'Impossible'

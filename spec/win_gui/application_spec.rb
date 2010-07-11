@@ -48,8 +48,7 @@ module WinGuiTest
           App.find(title: IMPOSSIBLE).should == nil
         end
 
-        it 'raises error if asked to find App with invalid Window info and :raise option is set' do
-
+        it 'raises error only if asked to find App with invalid Window info and :raise option is set' do
           expect{ App.find(title: IMPOSSIBLE, raise: WinGui::Errors::InitError) }.
                   to raise_error WinGui::Errors::InitError
         end
@@ -64,7 +63,7 @@ module WinGuiTest
 
         it 'raises error if asked to launch App with invalid path' do
           expect{ App.launch(path: IMPOSSIBLE, title: WIN_TITLE) }.
-                  to raise_error WinGui::Errors::InitError, /Unable to launch App, path "Impossible"/
+                  to raise_error WinGui::Errors::InitError, /Unable to launch "Impossible"/
         end
 
         it 'raises error if asked to launch App with invalid Window info' do
@@ -73,11 +72,15 @@ module WinGuiTest
         end
 
       end
-      it 'raises error if not able to start/find App'
-      it 'has properties:'
-#      it 'can be wrapped around any existing window' do
-#        any_handle = find_window(nil, nil)
-#        use{ Window.new any_handle }
+      context 'properties:' do
+        before(:each) { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
+        after(:each) { @app.close }
+
+        it 'main_window' do
+          @app.main_window.should be_a Window
+          @app.main_window.title.should == WIN_TITLE
+        end
+      end
     end
 
     context 'manipulating' do

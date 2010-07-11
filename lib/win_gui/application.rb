@@ -2,7 +2,7 @@ module WinGui
 
   # This class is a wrapper around Windows App
   class App
-    LAUNCH_TIMEOUT = 0.1
+    LAUNCH_TIMEOUT = 0.2
 
     attr_accessor :main_window # Main App window (top level)
 
@@ -50,7 +50,7 @@ module WinGui
         app_path = opts.delete(:path) || opts.delete(:app_path)
         dir_path = opts.delete(:dir) || opts.delete(:cd)
 
-        raise  unless app_path
+        raise unless app_path
         launch_app app_path, dir_path
 
         defaults = {timeout: LAUNCH_TIMEOUT,
@@ -65,13 +65,12 @@ module WinGui
 
       def launch_app(app_path, dir_path)
 
-        raise WinGui::Errors::InitError, "Unable to launch App, path #{app_path.inspect}" unless File.exists? app_path.to_s
-        command = cygwin? ? "cmd /c start `cygpath -w #{app_path}`" :
-                "start #{app_path.to_s.gsub(/\//, "\\")}"
+        raise WinGui::Errors::InitError, "Unable to launch #{app_path.inspect}" unless File.exists? app_path.to_s
+        command = cygwin? ? "cmd /c start `cygpath -w #{app_path}`" : "start #{app_path.to_s.gsub(/\//, "\\")}"
 
         if dir_path
-          raise WinGui::Errors::InitError, "Unable to launch App, path #{opts.inspect}" unless File.exists? dir_path.to_s
-          command = "cd #{cygwin? ? dir_path : dir_path = dir_path.to_s.gsub(/\//, "\\")} && #{command}"
+          raise WinGui::Errors::InitError, "Unable to change to #{dir_path.inspect}" unless File.exists? dir_path.to_s
+          command = "cd #{cygwin? ? dir_path : dir_path.to_s.gsub(/\//, "\\")} && #{command}"
         end
 
         # Launch test QUIK in a separate window
