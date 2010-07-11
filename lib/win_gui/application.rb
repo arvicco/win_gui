@@ -50,7 +50,6 @@ module WinGui
         app_path = opts.delete(:path) || opts.delete(:app_path)
         dir_path = opts.delete(:dir) || opts.delete(:cd)
 
-        raise unless app_path
         launch_app app_path, dir_path
 
         defaults = {timeout: LAUNCH_TIMEOUT,
@@ -73,7 +72,7 @@ module WinGui
           command = "cd #{cygwin? ? dir_path : dir_path.to_s.gsub(/\//, "\\")} && #{command}"
         end
 
-        # Launch test QUIK in a separate window
+        # Launch App in a separate window
         system command  # TODO: make sure only valid commands are fed into system
       end
 

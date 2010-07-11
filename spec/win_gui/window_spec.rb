@@ -91,13 +91,13 @@ module WinGuiTest
       it 'returns nil immediately if top-level window with given title not found' do
         start = Time.now
         Window.top_level( title: IMPOSSIBLE).should == nil
-        (Time.now - start).should be_close 0, 0.02
+        (Time.now - start).should be_close 0, 0.03
       end
 
       it 'returns nil after timeout if top-level window with given title not found' do
         start = Time.now
         Window.top_level( title: IMPOSSIBLE, timeout: 0.3).should == nil
-        (Time.now - start).should be_close 0.3, 0.02
+        (Time.now - start).should be_close 0.3, 0.03
       end
 
       it 'raises exception if asked to' do
@@ -111,13 +111,13 @@ module WinGuiTest
       it 'returns nil immediately if specific child not found' do
         start = Time.now
         @win.child( title: IMPOSSIBLE).should == nil
-        (Time.now - start).should be_close 0, 0.02
+        (Time.now - start).should be_close 0, 0.03
       end
 
       it 'returns nil after timeout if specific child not found' do
         start = Time.now
         @win.child( title: IMPOSSIBLE, timeout: 0.5).should == nil
-        (Time.now - start).should be_close 0.5, 0.02
+        (Time.now - start).should be_close 0.5, 0.03
       end
 
       it 'finds ANY child window without args' do
@@ -221,13 +221,6 @@ module WinGuiTest
     end # describe #children
 
     describe '#click' do
-#      it 'tests' do
-#        with_dialog(:save) do |dialog|
-#          dialog.children.each{|child| puts "#{child.handle}, #{child.class_name}, #{child.window_text}, #{dialog.child?(child.handle)}"}
-#          true.should == false
-#        end
-#      end
-
       it 'emulates left click of the control identified by id, returns click coords' do
         with_dialog(:save) do |dialog|
           point = dialog.click(id: IDCANCEL)
