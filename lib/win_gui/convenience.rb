@@ -25,7 +25,7 @@ module WinGui
 
   # Finds top-level dialog window by title and yields found dialog window to attached block.
   # We work with dialog window in a block, and then we wait for it to close before proceeding.
-  # That is, unless your block returns nil, in which case dialog is ignored and method immediately returns nil.
+  # That is, unless your block returns nil, in which case dialog is ignored (and method immediately returns nil?).
   # If no block is given, method just returns found dialog window (or nil if dialog is not found).
   # Options:
   # :title:: dialog title

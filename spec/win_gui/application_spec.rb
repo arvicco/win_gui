@@ -72,6 +72,7 @@ module WinGuiTest
         end
 
       end
+
       context 'properties:' do
         before(:each) { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
         after(:each) { @app.close }
@@ -94,7 +95,7 @@ module WinGuiTest
       end
 
       it 'closes App gracefully' do
-        @app.exit
+        @app.close
         sleep SLEEP_DELAY # needed to ensure window had enough time to close down
         @app.main_window.visible?.should == false
         @app.main_window.window?.should == false

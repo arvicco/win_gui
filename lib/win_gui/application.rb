@@ -58,6 +58,7 @@ module WinGui
       end
 
       private
+      
       def cygwin?
         RUBY_PLATFORM =~ /cygwin/
       end

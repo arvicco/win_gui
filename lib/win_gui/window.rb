@@ -41,7 +41,8 @@ module WinGui
       lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
     end
 
-    # Finds DIRECT child window (control) by either control ID or window class/title.
+    # Finds child window (control) by either control ID or window class/title.
+    # By default, only direct children are searched.
     # Options:
     # :id:: integer control id (such as IDOK, IDCANCEL, etc)
     # :title:: window title
@@ -158,13 +159,13 @@ module WinGui
     #   window.visible?
     # This API is much more Ruby-like compared to:
     #   visible?(window.handle)
-    # Of course, if we unvoke WinGui function that DOESN'T accept handle as a first arg this way, we are screwed.
+    # Of course, if we invoke WinGui function that DOESN'T accept handle as a first arg this way, we are screwed.
     # Call such functions only like this:
     #   WinGui.function(*args)
     # TODO: Such setup is problematic if WinGui is included into Window ancestor chain.
-    # TODO: in this case, all WinGui functions become available as instance methods, and method_missing never fires.
-    # TODO: it may be a better solution to explicitly define all needed instance methods.
-    # TODO: instead of showing off cool meta-programming skillz.
+    # TODO: In this case, all WinGui functions become available as instance methods, and method_missing never fires.
+    # TODO: It may be a better solution to explicitly define all needed instance methods,
+    # TODO: instead of showing off cool meta-programming skillz. ;-)
     #
     def method_missing(name, *args, &block)
       if WinGui.respond_to? name
