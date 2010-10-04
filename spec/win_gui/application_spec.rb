@@ -55,7 +55,6 @@ module WinGuiTest
       end
 
       context '::launch' do
-
         it 'launches new App given valid path and Window info' do
           use { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
           @app.should be_an App
@@ -70,7 +69,6 @@ module WinGuiTest
           expect { App.launch(path: APP_PATH, title: IMPOSSIBLE) }.
                   to raise_error WinGui::Errors::InitError, /Unable to launch App with .*?:title=>"Impossible"/
         end
-
       end
 
       context 'properties:' do
