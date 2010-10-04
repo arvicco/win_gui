@@ -53,3 +53,7 @@
 == 0.2.12 / 2010-06-18
 
 * Test_app class changed to App from Window
+
+== 0.2.13 / 2010-10-04
+
+* App#exit now accepts optional wait timeout

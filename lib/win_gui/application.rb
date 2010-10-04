@@ -17,8 +17,10 @@ module WinGui
       end
     end
 
-    def close
+    # Exits application (optionally waiting _timeout_ seconds for main window to close)
+    def close(timeout=nil)
       @main_window.close
+      @main_window.wait_for_close(timeout) if timeout
     end
     alias_method :exit, :close
 

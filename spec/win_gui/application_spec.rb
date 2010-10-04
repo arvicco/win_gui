@@ -1,9 +1,9 @@
-require File.join(File.dirname(__FILE__), "..", "spec_helper" )
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 module WinGuiTest
 
   describe App do
-    after(:each) do     # Reliably closes launched app window (without calling close_test_app)
+    after(:each) do # Reliably closes launched app window (without calling close_test_app)
       app = App.find(title: WIN_TITLE)
       app.exit if app
     end
@@ -11,7 +11,7 @@ module WinGuiTest
     context 'initializing' do
       context '::new' do
         before(:each) { launch_test_app }
-        after(:each){ close_test_app }
+        after(:each) { close_test_app }
 
         it 'wraps new App around existing Window' do
           window = Window.top_level(title: WIN_TITLE)
@@ -28,19 +28,19 @@ module WinGuiTest
         end
 
         it 'raises error trying to create App with wrong init args' do
-          expect{ App.new() }.to raise_error ArgumentError, /wrong number of arguments/
+          expect { App.new() }.to raise_error ArgumentError, /wrong number of arguments/
           [[nil], 1.2, {title: WIN_TITLE}].each do |args|
-            expect{ App.new(*args) }.to raise_error WinGui::Errors::InitError
+            expect { App.new(*args) }.to raise_error WinGui::Errors::InitError
           end
         end
       end
 
       context '::find' do
         before(:each) { launch_test_app }
-        after(:each){ close_test_app }
+        after(:each) { close_test_app }
 
         it 'finds already launched App given valid Window info' do
-          use{ @app = App.find(title: WIN_TITLE) }
+          use { @app = App.find(title: WIN_TITLE) }
           @app.should be_an App
         end
 
@@ -49,7 +49,7 @@ module WinGuiTest
         end
 
         it 'raises error only if asked to find App with invalid Window info and :raise option is set' do
-          expect{ App.find(title: IMPOSSIBLE, raise: WinGui::Errors::InitError) }.
+          expect { App.find(title: IMPOSSIBLE, raise: WinGui::Errors::InitError) }.
                   to raise_error WinGui::Errors::InitError
         end
       end
@@ -57,17 +57,17 @@ module WinGuiTest
       context '::launch' do
 
         it 'launches new App given valid path and Window info' do
-          use{ @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
+          use { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
           @app.should be_an App
         end
 
         it 'raises error if asked to launch App with invalid path' do
-          expect{ App.launch(path: IMPOSSIBLE, title: WIN_TITLE) }.
+          expect { App.launch(path: IMPOSSIBLE, title: WIN_TITLE) }.
                   to raise_error WinGui::Errors::InitError, /Unable to launch "Impossible"/
         end
 
         it 'raises error if asked to launch App with invalid Window info' do
-          expect{ App.launch(path: APP_PATH, title: IMPOSSIBLE) }.
+          expect { App.launch(path: APP_PATH, title: IMPOSSIBLE) }.
                   to raise_error WinGui::Errors::InitError, /Unable to launch App with .*?:title=>"Impossible"/
         end
 
@@ -85,7 +85,7 @@ module WinGuiTest
     end
 
     context 'manipulating' do
-      before(:each) {@app = App.launch(path: APP_PATH, title: WIN_TITLE)}
+      before(:each) { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
 
       it 'exits App gracefully' do
         @app.exit
@@ -97,6 +97,13 @@ module WinGuiTest
       it 'closes App gracefully' do
         @app.close
         sleep SLEEP_DELAY # needed to ensure window had enough time to close down
+        @app.main_window.visible?.should == false
+        @app.main_window.window?.should == false
+      end
+
+      it 'exits App with timeout' do
+        @app.exit(1)
+        # No sleep SLEEP_DELAY needed!
         @app.main_window.visible?.should == false
         @app.main_window.window?.should == false
       end
