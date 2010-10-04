@@ -5,7 +5,7 @@ module WinGuiTest
   describe App do
     after(:each) do # Reliably closes launched app window (without calling close_test_app)
       app = App.find(title: WIN_TITLE)
-      app.exit if app
+      app.exit(timeout=10) if app
     end
 
     context 'initializing' do

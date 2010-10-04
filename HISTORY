@@ -57,3 +57,7 @@
 == 0.2.13 / 2010-10-04
 
 * App#exit now accepts optional wait timeout
+
+== 0.2.14 / 2010-10-04
+
+* Reimplemented App#close with timeout

@@ -3,7 +3,7 @@ require 'win/gui'
 # Module contains Win32 API gui-related functions as both module and instance methods.
 # See documentation of Win::Gui module of *win* gem for a full scope of available functions.
 # In addition, module defines several higher-level convenience methods that can be useful
-# when dealing with GUI-related tasks under windows (such as testing automation).
+# when dealing with GUI-related tasks on Windows platform (such as testing automation).
 #
 module WinGui
   include Win::Gui

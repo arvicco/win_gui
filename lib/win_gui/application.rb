@@ -18,9 +18,14 @@ module WinGui
     end
 
     # Exits application (optionally waiting _timeout_ seconds for main window to close)
-    def close(timeout=nil)
+    def close(wait_timeout=nil)
       @main_window.close
-      @main_window.wait_for_close(timeout) if timeout
+      if wait_timeout
+        timeout(wait_timeout) do
+          sleep SLEEP_DELAY while @main_window.window?
+        end
+      end
+#      @main_window.wait_for_close(timeout) if timeout
     end
     alias_method :exit, :close
 
@@ -60,7 +65,7 @@ module WinGui
       end
 
       private
-      
+
       def cygwin?
         RUBY_PLATFORM =~ /cygwin/
       end
