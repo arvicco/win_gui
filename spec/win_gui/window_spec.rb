@@ -103,6 +103,11 @@ module WinGuiTest
       it 'raises exception if asked to' do
         expect{ Window.top_level( title: IMPOSSIBLE, raise: "Horror!")}.to raise_error "Horror!"
       end
+
+      it 'uses .find as alias for .top_level' do
+        use { @window = Window.find() }
+        @window.should be_a Window
+      end
     end # describe .top_level
 
     describe '#child' do
