@@ -39,8 +39,9 @@ module WinGui
       # :raise:: raise this exception instead of returning nil if nothing found
       #
       def find(opts)
+        opts[:logger].debug "Inside find" if opts[:logger]
         main_window = Window.top_level(opts)
-#        raise WinGui::Errors::InitError, "Unable to find App with #{opts.inspect}" unless main_window
+        opts[:logger].debug "Almost found" if opts[:logger]
         main_window ? new(main_window) : nil
       end
 
@@ -57,12 +58,15 @@ module WinGui
         app_path = opts.delete(:path) || opts.delete(:app_path)
         dir_path = opts.delete(:dir) || opts.delete(:cd)
 
-        p "Inside launch"
+        opts[:logger].debug "Inside launch" if opts[:logger]
         launch_app app_path, dir_path, opts[:logger]
+        opts[:logger].debug "App launched" if opts[:logger]
 
         defaults = {timeout: LAUNCH_TIMEOUT,
                     raise: WinGui::Errors::InitError.new("Unable to launch App with #{opts.inspect}")}
+        opts[:logger].debug "Trying to find" if opts[:logger]
         find(defaults.merge opts)
+        opts[:logger].debug "App launched" if opts[:logger]
       end
 
       private
@@ -73,10 +77,8 @@ module WinGui
 
       def launch_app(app_path, dir_path, logger=nil)
 
-        logger.debug "launch_app #{__LINE__}" if logger
         raise WinGui::Errors::InitError, "Unable to launch #{app_path.inspect}" unless File.exists? app_path.to_s
         command = cygwin? ? "cmd /c start `cygpath -w #{app_path}`" : "start #{app_path.to_s.gsub(/\//, "\\")}"
-        logger.debug "launch_app #{__LINE__}" if logger
 
         if dir_path
           raise WinGui::Errors::InitError, "Unable to change to #{dir_path.inspect}" unless File.exists? dir_path.to_s
