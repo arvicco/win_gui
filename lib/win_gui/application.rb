@@ -81,7 +81,9 @@ module WinGui
         end
 
         # Launch App in a separate window
+        p command
         system command  # TODO: make sure only valid commands are fed into system
+        p "Returned from system"
       end
 
     end
