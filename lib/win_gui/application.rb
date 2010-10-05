@@ -57,6 +57,7 @@ module WinGui
         app_path = opts.delete(:path) || opts.delete(:app_path)
         dir_path = opts.delete(:dir) || opts.delete(:cd)
 
+        p "Inside launch"
         launch_app app_path, dir_path
 
         defaults = {timeout: LAUNCH_TIMEOUT,
@@ -72,8 +73,10 @@ module WinGui
 
       def launch_app(app_path, dir_path)
 
+        p "launch_app #{__LINE__}"
         raise WinGui::Errors::InitError, "Unable to launch #{app_path.inspect}" unless File.exists? app_path.to_s
         command = cygwin? ? "cmd /c start `cygpath -w #{app_path}`" : "start #{app_path.to_s.gsub(/\//, "\\")}"
+        p "launch_app #{__LINE__}"
 
         if dir_path
           raise WinGui::Errors::InitError, "Unable to change to #{dir_path.inspect}" unless File.exists? dir_path.to_s
@@ -81,8 +84,10 @@ module WinGui
         end
 
         # Launch App in a separate window
+        p "launch_app #{__LINE__}"
         p command
         system command  # TODO: make sure only valid commands are fed into system
+        p "launch_app #{__LINE__}"
         p "Returned from system"
       end
 
