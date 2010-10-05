@@ -16,16 +16,20 @@ module WinGui
       #
       def lookup_window(opts) # :yields: index, position
         # Need this to avoid handle considered local in begin..end block
+        opts[:logger].debug "Inside lookup_window" if opts[:logger]
         handle = yield
         if opts[:timeout]
           begin
             timeout(opts[:timeout]) do
               sleep SLEEP_DELAY until handle = yield
             end
+            opts[:logger].debug "Window found" if opts[:logger]
           rescue TimeoutError
+            opts[:logger].debug "Timeout rescued" if opts[:logger]
             nil
           end
         end
+        opts[:logger].debug "Handle is:#{handle}" if opts[:logger]
         raise opts[:raise] if opts[:raise] && !handle
         Window.new(handle) if handle
       end
@@ -39,10 +43,11 @@ module WinGui
       # :raise:: raise this exception instead of returning nil if nothing found
       #
       def top_level(opts={})
+        opts[:logger].debug "Inside top_level" if opts[:logger]
         lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
       end
-
       alias_method :find, :top_level
+
     end
 
     # Finds child window (control) by either control ID or window class/title.
