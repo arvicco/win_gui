@@ -16,8 +16,9 @@ module WinGui
       #
       def lookup_window(opts) # :yields: index, position
         # Need this to avoid handle considered local in begin..end block
-        opts[:logger].debug "Inside lookup_window" if opts[:logger]
+        opts[:logger].debug "Inside lookup_window with #{opts.inspect}" if opts[:logger]
         handle = yield
+        opts[:logger].debug "After 1st yield" if opts[:logger]
         if opts[:timeout]
           begin
             timeout(opts[:timeout]) do
