@@ -47,6 +47,10 @@ module WinGui
         opts[:logger].debug "Inside top_level" if opts[:logger]
         lookup_window(opts) do
           opts[:logger].debug "Inside lookup_block with #{opts}" if opts[:logger]
+          opts[:logger].debug "WinGui: #{WinGui}" if opts[:logger]
+          opts[:logger].debug "WinGui respond: #{WinGui.respond_to?(:find_window)}" if opts[:logger]
+          opts[:logger].debug "WinGui any: #{WinGui.find_window(nil, nil)}" if opts[:logger]
+
           w = WinGui.find_window opts[:class], opts[:title]
           opts[:logger].debug "Found #{w}" if opts[:logger]
           w
