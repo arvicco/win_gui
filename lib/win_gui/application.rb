@@ -63,7 +63,7 @@ module WinGui
         opts[:logger].debug "App launched" if opts[:logger]
 
         defaults = {timeout: LAUNCH_TIMEOUT,
-                    raise: WinGui::Errors::InitError.new("Unable to launch App with #{opts.inspect}")}
+                    raise: WinGui::Errors::InitError.new("Unable to launch App")} with #{opts.inspect}")}
         opts[:logger].debug "Trying to find" if opts[:logger]
         find(defaults.merge opts)
         opts[:logger].debug "App launched" if opts[:logger]
