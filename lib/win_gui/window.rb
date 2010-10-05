@@ -49,6 +49,7 @@ module WinGui
           opts[:logger].debug "Inside lookup_block with #{opts}" if opts[:logger]
           opts[:logger].debug "WinGui: #{WinGui}" if opts[:logger]
           opts[:logger].debug "WinGui respond: #{WinGui.respond_to?(:find_window)}" if opts[:logger]
+          opts[:logger].debug "WinGui IsWindow: #{WinGui.is_window(1234)}" if opts[:logger]
           opts[:logger].debug "WinGui any: #{WinGui.find_window(nil, nil)}" if opts[:logger]
 
           w = WinGui.find_window opts[:class], opts[:title]
