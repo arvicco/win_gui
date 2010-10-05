@@ -61,3 +61,7 @@
 == 0.2.14 / 2010-10-04
 
 * Reimplemented App#close with timeout
+
+== 0.2.15 / 2010-10-05
+
+* Window.find added as alias to Window.top_level

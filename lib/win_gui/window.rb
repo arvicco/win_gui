@@ -9,36 +9,40 @@ module WinGui
 
     attr_reader :handle
 
-    # Looks up window handle using code specified in attached block (either with or without :timeout).
-    # Returns either Window instance (for a found handle) or nil if nothing found.
-    # Private method to dry up other window lookup methods
-    #
-    def self.lookup_window(opts) # :yields: index, position
-      # Need this to avoid handle considered local in begin..end block
-      handle = yield
-      if opts[:timeout]
-        begin
-          timeout(opts[:timeout]) do
-            sleep SLEEP_DELAY until handle = yield
+    class << self
+      # Looks up window handle using code specified in attached block (either with or without :timeout).
+      # Returns either Window instance (for a found handle) or nil if nothing found.
+      # Private method to dry up other window lookup methods
+      #
+      def lookup_window(opts) # :yields: index, position
+        # Need this to avoid handle considered local in begin..end block
+        handle = yield
+        if opts[:timeout]
+          begin
+            timeout(opts[:timeout]) do
+              sleep SLEEP_DELAY until handle = yield
+            end
+          rescue TimeoutError
+            nil
           end
-        rescue TimeoutError
-          nil
         end
+        raise opts[:raise] if opts[:raise] && !handle
+        Window.new(handle) if handle
       end
-      raise opts[:raise] if opts[:raise] && !handle
-      Window.new(handle) if handle
-    end
 
-    # Finds top level window by title/class, returns wrapped Window object or nil (raises exception if asked to).
-    # If timeout option given, waits for window to appear within timeout, returns nil if it didn't.
-    # Options:
-    # :title:: window title
-    # :class:: window class
-    # :timeout:: timeout (seconds)
-    # :raise:: raise this exception instead of returning nil if nothing found
-    #
-    def self.top_level(opts={})
-      lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
+      # Finds top level window by title/class, returns wrapped Window object or nil (raises exception if asked to).
+      # If timeout option given, waits for window to appear within timeout, returns nil if it didn't.
+      # Options:
+      # :title:: window title
+      # :class:: window class
+      # :timeout:: timeout (seconds)
+      # :raise:: raise this exception instead of returning nil if nothing found
+      #
+      def top_level(opts={})
+        lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
+      end
+
+      alias_method :find, :top_level
     end
 
     # Finds child window (control) by either control ID or window class/title.
@@ -72,7 +76,7 @@ module WinGui
     # Returns array of Windows that are descendants (not only DIRECT children) of a given Window
     #
     def children
-      enum_child_windows.map{|child_handle| Window.new child_handle}
+      enum_child_windows.map { |child_handle| Window.new child_handle }
     end
 
     # Emulates click of the control identified by opts (:id, :title, :class).
@@ -92,13 +96,13 @@ module WinGui
 
         where = opts[:point] || opts[:where] || opts[:position]
         point = case where
-          when Array
-            where                                                  # Explicit screen coords
-          when :random
-            [left + rand(right - left), top + rand(bottom - top)]  # Random point within control window
-          else
-            [(left + right) / 2, (top + bottom) / 2]               # Center of a control window
-        end
+                  when Array
+                    where # Explicit screen coords
+                  when :random
+                    [left + rand(right - left), top + rand(bottom - top)] # Random point within control window
+                  else
+                    [(left + right) / 2, (top + bottom) / 2] # Center of a control window
+                end
 
         WinGui.set_cursor_pos *point
 
@@ -117,7 +121,7 @@ module WinGui
 
     # Waits for this window to close with timeout (default CLOSE_TIMEOUT).
     #
-    def wait_for_close(timeout=CLOSE_TIMEOUT )
+    def wait_for_close(timeout=CLOSE_TIMEOUT)
       timeout(timeout) do
         sleep SLEEP_DELAY while window_visible?
       end
