@@ -16,7 +16,7 @@ module WinGui
       #
       def lookup_window(opts) # :yields: index, position
         # Need this to avoid handle considered local in begin..end block
-        opts[:logger].debug "Inside lookup_window with #{opts.inspect}" if opts[:logger]
+        opts[:logger].debug "Inside lookup_window with #{opts}" if opts[:logger]
         handle = yield
         opts[:logger].debug "After 1st yield" if opts[:logger]
         if opts[:timeout]
@@ -45,7 +45,12 @@ module WinGui
       #
       def top_level(opts={})
         opts[:logger].debug "Inside top_level" if opts[:logger]
-        lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
+        lookup_window(opts) do
+          opts[:logger].debug "Inside lookup_block with #{opts}" if opts[:logger]
+          w = WinGui.find_window opts[:class], opts[:title]
+          opts[:logger].debug "Found #{w}" if opts[:logger]
+          w
+        end
       end
       alias_method :find, :top_level
 
