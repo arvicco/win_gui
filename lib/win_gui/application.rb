@@ -58,7 +58,7 @@ module WinGui
         dir_path = opts.delete(:dir) || opts.delete(:cd)
 
         p "Inside launch"
-        launch_app app_path, dir_path
+        launch_app app_path, dir_path, opts[:logger]
 
         defaults = {timeout: LAUNCH_TIMEOUT,
                     raise: WinGui::Errors::InitError.new("Unable to launch App with #{opts.inspect}")}
@@ -71,12 +71,12 @@ module WinGui
         RUBY_PLATFORM =~ /cygwin/
       end
 
-      def launch_app(app_path, dir_path)
+      def launch_app(app_path, dir_path, logger=nil)
 
-        p "launch_app #{__LINE__}"
+        logger.debug "launch_app #{__LINE__}" if logger
         raise WinGui::Errors::InitError, "Unable to launch #{app_path.inspect}" unless File.exists? app_path.to_s
         command = cygwin? ? "cmd /c start `cygpath -w #{app_path}`" : "start #{app_path.to_s.gsub(/\//, "\\")}"
-        p "launch_app #{__LINE__}"
+        logger.debug "launch_app #{__LINE__}" if logger
 
         if dir_path
           raise WinGui::Errors::InitError, "Unable to change to #{dir_path.inspect}" unless File.exists? dir_path.to_s
@@ -84,11 +84,9 @@ module WinGui
         end
 
         # Launch App in a separate window
-        p "launch_app #{__LINE__}"
-        p command
+        logger.debug "launch_app #{__LINE__} cmd: #{command}" if logger
         system command  # TODO: make sure only valid commands are fed into system
-        p "launch_app #{__LINE__}"
-        p "Returned from system"
+        logger.debug "launch_app #{__LINE__} after system" if logger
       end
 
     end
