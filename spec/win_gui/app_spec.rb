@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require_relative "../spec_helper.rb"
 
 module WinGuiTest
 
@@ -68,6 +68,16 @@ module WinGuiTest
         it 'raises error if asked to launch App with invalid Window info' do
           expect { App.launch(path: APP_PATH, title: IMPOSSIBLE) }.
                   to raise_error WinGui::Errors::InitError, /Unable to launch App with .*?:title=>"Impossible"/
+        end
+
+        it 'changes to given valid directory before launch' do
+          use { @app = App.launch(dir: APP_PATH.sub(/LockNote.exe/, ''), path: 'Locknote.exe', title: WIN_TITLE) }
+          @app.should be_an App
+        end
+
+        it 'raises error if given invalid directory to change' do
+          expect { @app = App.launch(dir: APP_PATH, path: APP_PATH, title: WIN_TITLE) }.
+          to raise_error WinGui::Errors::InitError, /Unable to change to ".*LockNote.exe"/
         end
       end
 

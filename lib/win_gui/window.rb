@@ -15,22 +15,17 @@ module WinGui
       # Private method to dry up other window lookup methods
       #
       def lookup_window(opts) # :yields: index, position
-        # Need this to avoid handle considered local in begin..end block
-        opts[:logger].debug "Inside lookup_window with #{opts}" if opts[:logger]
+        # Need this to avoid handle considered local var in begin..end block
         handle = yield
-        opts[:logger].debug "After 1st yield" if opts[:logger]
         if opts[:timeout]
           begin
             timeout(opts[:timeout]) do
               sleep SLEEP_DELAY until handle = yield
             end
-            opts[:logger].debug "Window found" if opts[:logger]
           rescue TimeoutError
-            opts[:logger].debug "Timeout rescued" if opts[:logger]
             nil
           end
         end
-        opts[:logger].debug "Handle is:#{handle}" if opts[:logger]
         raise opts[:raise] if opts[:raise] && !handle
         Window.new(handle) if handle
       end
@@ -44,21 +39,9 @@ module WinGui
       # :raise:: raise this exception instead of returning nil if nothing found
       #
       def top_level(opts={})
-        opts[:logger].debug "Inside top_level" if opts[:logger]
-        lookup_window(opts) do
-          opts[:logger].debug "Inside lookup_block with #{opts}" if opts[:logger]
-          opts[:logger].debug "WinGui: #{WinGui}" if opts[:logger]
-          opts[:logger].debug "WinGui respond: #{WinGui.respond_to?(:find_window)}" if opts[:logger]
-          opts[:logger].debug "WinGui IsWindow: #{WinGui.is_window(1234)}" if opts[:logger]
-          opts[:logger].debug "WinGui any: #{WinGui.find_window(nil, nil)}" if opts[:logger]
-
-          w = WinGui.find_window opts[:class], opts[:title]
-          opts[:logger].debug "Found #{w}" if opts[:logger]
-          w
-        end
+        lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
       end
       alias_method :find, :top_level
-
     end
 
     # Finds child window (control) by either control ID or window class/title.

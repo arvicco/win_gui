@@ -1,5 +1,5 @@
 # encoding: UTF-8
-require File.join(File.dirname(__FILE__), "spec_helper" )
+require_relative "spec_helper.rb"
 
 module WinGuiTest
 

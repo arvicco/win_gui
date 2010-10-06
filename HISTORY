@@ -65,3 +65,7 @@
 == 0.2.15 / 2010-10-05
 
 * Window.find added as alias to Window.top_level
+
+== 0.2.16 / 2010-10-06
+
+* Debug removed
