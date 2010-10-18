@@ -4,19 +4,16 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'version'
-require 'date'
-
 Gem::Specification.new do |gem|
   gem.name        = "win_gui"
-  gem.version     = ::WinGui::VERSION
+  gem.version     = File.open('VERSION').read.strip #::WinGui::VERSION - conflicts with Bundler
   gem.summary     = %q{Abstractions/wrappers around GUI-related Win32 API functions}
   gem.description = %q{Abstractions/wrappers around GUI-related Win32 API functions}
   gem.authors     = ["arvicco"]
   gem.email       = "arvitallian@gmail.com"
   gem.homepage    = %q{http://github.com/arvicco/win_gui}
   gem.platform    = Gem::Platform::RUBY
-  gem.date        = Date.today.to_s
+  gem.date        = Time.now.strftime "%Y-%m-%d"
 
   # Files setup
   versioned         = `git ls-files -z`.split("\0")
@@ -35,9 +32,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency("rspec", [">= 1.2.9"])
   gem.add_development_dependency("cucumber", [">= 0"])
   gem.add_dependency("win", [">= 0.3.1"])
-
-  gem.rubyforge_project = ""
-  gem.rubygems_version  = `gem -v`
-  #gem.required_rubygems_version = ">= 1.3.6"
 end
 

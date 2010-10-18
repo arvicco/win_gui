@@ -69,3 +69,7 @@
 == 0.2.16 / 2010-10-06
 
 * Debug removed
+
+== 0.2.17 / 2010-10-18
+
+* Gemspec changed for Bundler

@@ -67,7 +67,7 @@ module WinGui
       private
 
       def cygwin?
-        RUBY_PLATFORM =~ /cygwin/
+        @cygwin_flag ||= RUBY_PLATFORM =~ /cygwin/
       end
 
       def launch_app(app_path, dir_path)
