@@ -29,13 +29,13 @@ shared_examples_for 'normal window finder' do
   it 'returns nil immediately if top-level window not found' do
     start = Time.now
     Window.top_level(:title => impossible).should == nil
-    (Time.now - start).should be_within(0.03).of 0
+    (Time.now - start).should be_within(0.05).of 0
   end
 
   it 'returns nil after timeout if top-level window not found' do
     start = Time.now
     Window.top_level(:title => impossible, :timeout => 0.3).should == nil
-    (Time.now - start).should be_within(0.03).of 0.3
+    (Time.now - start).should be_within(0.05).of 0.3
   end
 
   it 'raises exception if asked to' do
@@ -134,6 +134,14 @@ describe WinGui::Window do
       it_should_behave_like 'normal window finder'
     end
 
+    context 'with mixed arguments' do
+      let(:title) { Regexp.new WIN_TITLE[-6..-1] }
+      let(:class_name) { WIN_CLASS }
+      let(:impossible) { IMPOSSIBLE }
+
+      it_should_behave_like 'normal window finder'
+    end
+
   end # describe .top_level
 
   describe '#child' do
@@ -142,13 +150,13 @@ describe WinGui::Window do
     it 'returns nil immediately if specific child not found' do
       start = Time.now
       @win.child(title: IMPOSSIBLE).should == nil
-      (Time.now - start).should be_within(0.03).of 0
+      (Time.now - start).should be_within(0.05).of 0
     end
 
     it 'returns nil after timeout if specific child not found' do
       start = Time.now
       @win.child(title: IMPOSSIBLE, timeout: 0.5).should == nil
-      (Time.now - start).should be_within(0.03).of 0.5
+      (Time.now - start).should be_within(0.05).of 0.5
     end
 
     it 'finds ANY child window without args' do
