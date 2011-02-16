@@ -2,17 +2,13 @@ desc 'Alias to spec:spec'
 task :spec => 'spec:spec'
 
 namespace :spec do
-  require 'spec/rake/spectask'
+  require 'rspec/core/rake_task'
 
   desc "Run all specs"
-  Spec::Rake::SpecTask.new(:spec) do |t|
-    t.spec_opts = ['--options', %Q{"#{BASE_PATH}/spec/spec.opts"}]
-    t.spec_files = FileList['spec/**/*_spec.rb']
-  end
+  RSpec::Core::RakeTask.new(:spec){|task|}
 
   desc "Run specs with RCov"
-  Spec::Rake::SpecTask.new(:rcov) do |t|
-    t.spec_files = FileList['spec/**/*_spec.rb']
+  RSpec::Core::RakeTask.new(:rcov) do |t|
     t.rcov = true
     t.rcov_opts = ['--exclude', 'spec']
   end
