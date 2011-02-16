@@ -51,18 +51,17 @@ describe WinGui::Window do
 
     it 'has class_name and text/title properties (derived from WinGui function calls)' do
       @win.class_name.should == WIN_CLASS
-      # text propery accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
+      # text property accessed by sending WM_GETTEXT directly to window (convenience method in WinGui)
       @win.text.should == WIN_TITLE
-      # window_text propery accessed via GetWindowText
+      # window_text property accessed via GetWindowText
       @win.window_text.should == WIN_TITLE
       # title property is just an alias for window_text
       @win.title.should == WIN_TITLE
     end
 
-    it 'has thread and process properties derived from get_window_thread_process_id' do
-      thread  = @win.thread
-      process = @win.process
-      [thread, process].should == get_window_thread_process_id(@win.handle)
+    it 'has thread and process(pid) properties derived from get_window_thread_process_id' do
+      [@win.thread, @win.process].should == get_window_thread_process_id(@win.handle)
+      @win.pid.should == @win.process
     end
 
     it 'has id property that only makes sense for controls' do
@@ -71,41 +70,76 @@ describe WinGui::Window do
   end
 
   describe '::top_level' do
-    it 'finds top-level window by title and wraps it in a Window object' do
-      window = Window.top_level(title: WIN_TITLE, timeout: 1)
-      window.handle.should == @win.handle
-    end
-
-    it 'finds top-level window by class and wraps it in a Window object' do
-      window = Window.top_level(class: WIN_CLASS, timeout: 1)
-      window.handle.should == @win.handle
-    end
-
     it 'finds ANY top-level window without args and wraps it in a Window object' do
       use { @window = Window.top_level() }
       @window.should be_a Window
     end
 
-    it 'returns nil immediately if top-level window with given title not found' do
-      start = Time.now
-      Window.top_level(title: IMPOSSIBLE).should == nil
-      (Time.now - start).should be_within(0.03).of 0
+
+    context 'with String arguments' do
+      let(:title) { WIN_TITLE }
+      let(:class_name) { WIN_CLASS }
+      let(:impossible) { IMPOSSIBLE }
+
+      it 'finds top-level window by title and wraps it in a Window object' do
+        window = Window.top_level(:title => title, timeout: 1)
+        window.handle.should == @win.handle
+      end
+
+      it 'finds top-level window by class and wraps it in a Window object' do
+        window = Window.top_level(:class => class_name, timeout: 1)
+        window.handle.should == @win.handle
+      end
+
+      it 'returns nil immediately if top-level window with given title not found' do
+        start = Time.now
+        Window.top_level(:title => impossible).should == nil
+        (Time.now - start).should be_within(0.03).of 0
+      end
+
+      it 'returns nil after timeout if top-level window with given title not found' do
+        start = Time.now
+        Window.top_level(:title => impossible, :timeout => 0.3).should == nil
+        (Time.now - start).should be_within(0.03).of 0.3
+      end
+
+      it 'raises exception if asked to' do
+        expect { Window.top_level(:title => impossible, :raise => "Horror!") }.to raise_error "Horror!"
+      end
     end
 
-    it 'returns nil after timeout if top-level window with given title not found' do
-      start = Time.now
-      Window.top_level(title: IMPOSSIBLE, timeout: 0.3).should == nil
-      (Time.now - start).should be_within(0.03).of 0.3
+    context 'with Regexp arguments' do
+      let(:title) { Regexp.new WIN_TITLE[-6..-1] }
+      let(:class_name) { Regexp.new WIN_CLASS[-6..-1] }
+      let(:impossible) { Regexp.new IMPOSSIBLE }
+
+      it 'finds top-level window by title and wraps it in a Window object' do
+        window = Window.top_level(:title => title, timeout: 1)
+        window.handle.should == @win.handle
+      end
+
+      it 'finds top-level window by class and wraps it in a Window object' do
+        window = Window.top_level(:class => class_name, timeout: 1)
+        window.handle.should == @win.handle
+      end
+
+      it 'returns nil immediately if top-level window with given title not found' do
+        start = Time.now
+        Window.top_level(:title => impossible).should == nil
+        (Time.now - start).should be_within(0.03).of 0
+      end
+
+      it 'returns nil after timeout if top-level window with given title not found' do
+        start = Time.now
+        Window.top_level(:title => impossible, :timeout => 0.3).should == nil
+        (Time.now - start).should be_within(0.03).of 0.3
+      end
+
+      it 'raises exception if asked to' do
+        expect { Window.top_level(:title => impossible, :raise => "Horror!") }.to raise_error "Horror!"
+      end
     end
 
-    it 'raises exception if asked to' do
-      expect { Window.top_level(title: IMPOSSIBLE, raise: "Horror!") }.to raise_error "Horror!"
-    end
-
-    it 'uses .find as alias for .top_level' do
-      use { @window = Window.find() }
-      @window.should be_a Window
-    end
   end # describe .top_level
 
   describe '#child' do

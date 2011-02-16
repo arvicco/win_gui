@@ -14,7 +14,7 @@ module WinGui
       # Returns either Window instance (for a found handle) or nil if nothing found.
       # Private method to dry up other window lookup methods
       #
-      def lookup_window(opts) # :yields: index, position
+      def lookup_window opts # :yields: index, position
         # Need this to avoid handle considered local var in begin..end block
         handle = yield
         if opts[:timeout]
@@ -33,15 +33,32 @@ module WinGui
       # Finds top level window by title/class, returns wrapped Window object or nil (raises exception if asked to).
       # If timeout option given, waits for window to appear within timeout, returns nil if it didn't.
       # Options:
-      # :title:: window title
-      # :class:: window class
+      # :title:: window title (String or Regexp)
+      # :class:: window class (String or Regexp)
       # :timeout:: timeout (seconds)
       # :raise:: raise this exception instead of returning nil if nothing found
       #
-      def top_level(opts={})
-        lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
+      def top_level opts={}
+        class_name   = opts[:class]
+        title        = opts[:title]
+        class_regexp = class_name.is_a? Regexp
+        title_regexp = title.is_a? Regexp
+
+        if class_regexp or title_regexp
+          lookup_window(opts) do
+            WinGui.enum_windows.each do |handle|
+              win = Window.new handle
+              return win if class_regexp && win.class_name =~ class_name
+              return win if title_regexp && win.title =~ title
+            end
+            nil
+          end
+        else
+          lookup_window(opts) { WinGui.find_window class_name, title }
+        end
       end
-      alias_method :find, :top_level
+
+      alias find top_level
     end
 
     # Finds child window (control) by either control ID or window class/title.
@@ -60,8 +77,8 @@ module WinGui
         self.class.lookup_window opts do
           found = children.find do |child|
             (opts[:id] ? child.id == opts[:id] : true) &&
-                    (opts[:class] ? child.class_name == opts[:class] : true) &&
-                    (opts[:title] ? child.title == opts[:title] : true)
+                (opts[:class] ? child.class_name == opts[:class] : true) &&
+                (opts[:title] ? child.title == opts[:title] : true)
           end
           found.handle if found
         end
@@ -106,9 +123,9 @@ module WinGui
         WinGui.set_cursor_pos *point
 
         button = opts[:mouse_button] || opts[:mouse] || opts[:which]
-        down, up =  (button == :right) ?
-                [WinGui::MOUSEEVENTF_RIGHTDOWN, WinGui::MOUSEEVENTF_RIGHTUP] :
-                [WinGui::MOUSEEVENTF_LEFTDOWN, WinGui::MOUSEEVENTF_LEFTUP]
+        down, up = (button == :right) ?
+            [WinGui::MOUSEEVENTF_RIGHTDOWN, WinGui::MOUSEEVENTF_RIGHTUP] :
+            [WinGui::MOUSEEVENTF_LEFTDOWN, WinGui::MOUSEEVENTF_LEFTUP]
 
         WinGui.mouse_event down, 0, 0, 0, 0
         WinGui.mouse_event up, 0, 0, 0, 0
@@ -149,6 +166,8 @@ module WinGui
     def process
       get_window_thread_process_id.last
     end
+
+    alias pid process
 
     # Control ID associated with the window (only makes sense for controls)
     def id
