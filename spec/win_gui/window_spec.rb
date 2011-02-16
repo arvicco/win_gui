@@ -89,13 +89,13 @@ describe WinGui::Window do
     it 'returns nil immediately if top-level window with given title not found' do
       start = Time.now
       Window.top_level(title: IMPOSSIBLE).should == nil
-      (Time.now - start).should be_close 0, 0.03
+      (Time.now - start).should be_within(0.03).of 0
     end
 
     it 'returns nil after timeout if top-level window with given title not found' do
       start = Time.now
       Window.top_level(title: IMPOSSIBLE, timeout: 0.3).should == nil
-      (Time.now - start).should be_close 0.3, 0.03
+      (Time.now - start).should be_within(0.03).of 0.3
     end
 
     it 'raises exception if asked to' do
@@ -114,13 +114,13 @@ describe WinGui::Window do
     it 'returns nil immediately if specific child not found' do
       start = Time.now
       @win.child(title: IMPOSSIBLE).should == nil
-      (Time.now - start).should be_close 0, 0.03
+      (Time.now - start).should be_within(0.03).of 0
     end
 
     it 'returns nil after timeout if specific child not found' do
       start = Time.now
       @win.child(title: IMPOSSIBLE, timeout: 0.5).should == nil
-      (Time.now - start).should be_close 0.5, 0.03
+      (Time.now - start).should be_within(0.03).of 0.5
     end
 
     it 'finds ANY child window without args' do
