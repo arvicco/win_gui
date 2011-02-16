@@ -30,6 +30,28 @@ module WinGui
         Window.new(handle) if handle
       end
 
+      def lookup_window_in_collection opts, &collection_proc
+        class_name   = opts[:class]
+        title        = opts[:title]
+        id           = opts[:id]
+        class_regexp = class_name.is_a? Regexp
+        title_regexp = title.is_a? Regexp
+
+        lookup_window(opts) do
+          collection_proc.call.each do |handle|
+            win         = Window.new handle
+
+            id_match    = !id || win.id == id
+            title_match = !title || win.title == title ||
+                title_regexp && win.title =~ title
+            class_match = !class_name || win.class_name == class_name ||
+                class_regexp && win.class_name =~ class_name
+            return win if class_match && title_match && id_match
+          end
+          nil
+        end
+      end
+
       # Finds top level window by title/class, returns wrapped Window object or nil (raises exception if asked to).
       # If timeout option given, waits for window to appear within timeout, returns nil if it didn't.
       # Options:
@@ -45,14 +67,7 @@ module WinGui
         title_regexp = title.is_a? Regexp
 
         if class_regexp or title_regexp
-          lookup_window(opts) do
-            WinGui.enum_windows.each do |handle|
-              win = Window.new handle
-              return win if class_regexp && win.class_name =~ class_name
-              return win if title_regexp && win.title =~ title
-            end
-            nil
-          end
+          lookup_window_in_collection(opts){WinGui.enum_windows}
         else
           lookup_window(opts) { WinGui.find_window class_name, title }
         end
@@ -65,12 +80,11 @@ module WinGui
     # By default, only direct children are searched.
     # Options:
     # :id:: integer control id (such as IDOK, IDCANCEL, etc)
-    # :title:: window title
-    # :class:: window class
+    # :title:: window title (String or Regexp)
+    # :class:: window class (String or Regexp)
     # :indirect:: search all descendants, not only direct children
     # :timeout:: timeout (seconds)
     # :raise:: raise this exception instead of returning nil if nothing found
-    # TODO: add the ability to nail indirect children as well
     #
     def child(opts={})
       if opts[:indirect]

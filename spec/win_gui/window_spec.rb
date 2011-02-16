@@ -1,5 +1,48 @@
 require "spec_helper.rb"
 
+shared_examples_for 'normal window finder' do
+  it 'finds top-level window by title and wraps it in a Window object' do
+    window = Window.top_level(:title => title, timeout: 1)
+    window.handle.should == @win.handle
+  end
+
+  it 'finds top-level window by class and wraps it in a Window object' do
+    window = Window.top_level(:class => class_name, timeout: 1)
+    window.handle.should == @win.handle
+  end
+
+  it 'finds top-level window by both class and title' do
+    window = Window.top_level(:class => class_name, :title => title)
+    window.handle.should == @win.handle
+  end
+
+  it 'finds top-level window by both class and title' do
+    window = Window.top_level(:class => class_name, :title => title)
+    window.handle.should == @win.handle
+  end
+
+  it 'returns nil if either window title or class do not match' do
+    Window.top_level(:class => class_name, :title => impossible).should == nil
+    Window.top_level(:class => impossible, :title => title).should == nil
+  end
+
+  it 'returns nil immediately if top-level window not found' do
+    start = Time.now
+    Window.top_level(:title => impossible).should == nil
+    (Time.now - start).should be_within(0.03).of 0
+  end
+
+  it 'returns nil after timeout if top-level window not found' do
+    start = Time.now
+    Window.top_level(:title => impossible, :timeout => 0.3).should == nil
+    (Time.now - start).should be_within(0.03).of 0.3
+  end
+
+  it 'raises exception if asked to' do
+    expect { Window.top_level(:title => impossible, :raise => "Horror!") }.to raise_error "Horror!"
+  end
+end
+
 describe WinGui::Window do
   before(:each) { @win = launch_test_app.main_window }
   after(:each) { close_test_app }
@@ -75,37 +118,12 @@ describe WinGui::Window do
       @window.should be_a Window
     end
 
-
     context 'with String arguments' do
       let(:title) { WIN_TITLE }
       let(:class_name) { WIN_CLASS }
       let(:impossible) { IMPOSSIBLE }
 
-      it 'finds top-level window by title and wraps it in a Window object' do
-        window = Window.top_level(:title => title, timeout: 1)
-        window.handle.should == @win.handle
-      end
-
-      it 'finds top-level window by class and wraps it in a Window object' do
-        window = Window.top_level(:class => class_name, timeout: 1)
-        window.handle.should == @win.handle
-      end
-
-      it 'returns nil immediately if top-level window with given title not found' do
-        start = Time.now
-        Window.top_level(:title => impossible).should == nil
-        (Time.now - start).should be_within(0.03).of 0
-      end
-
-      it 'returns nil after timeout if top-level window with given title not found' do
-        start = Time.now
-        Window.top_level(:title => impossible, :timeout => 0.3).should == nil
-        (Time.now - start).should be_within(0.03).of 0.3
-      end
-
-      it 'raises exception if asked to' do
-        expect { Window.top_level(:title => impossible, :raise => "Horror!") }.to raise_error "Horror!"
-      end
+      it_should_behave_like 'normal window finder'
     end
 
     context 'with Regexp arguments' do
@@ -113,31 +131,7 @@ describe WinGui::Window do
       let(:class_name) { Regexp.new WIN_CLASS[-6..-1] }
       let(:impossible) { Regexp.new IMPOSSIBLE }
 
-      it 'finds top-level window by title and wraps it in a Window object' do
-        window = Window.top_level(:title => title, timeout: 1)
-        window.handle.should == @win.handle
-      end
-
-      it 'finds top-level window by class and wraps it in a Window object' do
-        window = Window.top_level(:class => class_name, timeout: 1)
-        window.handle.should == @win.handle
-      end
-
-      it 'returns nil immediately if top-level window with given title not found' do
-        start = Time.now
-        Window.top_level(:title => impossible).should == nil
-        (Time.now - start).should be_within(0.03).of 0
-      end
-
-      it 'returns nil after timeout if top-level window with given title not found' do
-        start = Time.now
-        Window.top_level(:title => impossible, :timeout => 0.3).should == nil
-        (Time.now - start).should be_within(0.03).of 0.3
-      end
-
-      it 'raises exception if asked to' do
-        expect { Window.top_level(:title => impossible, :raise => "Horror!") }.to raise_error "Horror!"
-      end
+      it_should_behave_like 'normal window finder'
     end
 
   end # describe .top_level
