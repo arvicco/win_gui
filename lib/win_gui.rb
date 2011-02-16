@@ -1,5 +1,6 @@
-require_relative 'version'
-require_relative 'extension'
+require 'version'
+require 'extension'
+require 'timeout'
 
 module WinGui
 

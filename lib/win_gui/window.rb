@@ -22,7 +22,7 @@ module WinGui
             timeout(opts[:timeout]) do
               sleep SLEEP_DELAY until handle = yield
             end
-          rescue TimeoutError
+          rescue Timeout::Error
             nil
           end
         end
