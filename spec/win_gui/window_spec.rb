@@ -43,6 +43,62 @@ shared_examples_for 'normal window finder' do
   end
 end
 
+shared_examples_for 'child window finder' do
+
+  it 'finds ANY child window without specific args' do
+    use { @child = @win.child(opts) }
+    @child.should_not == nil
+    @win.child?(@child.handle).should == true
+  end
+
+  it 'returns nil immediately if specific child not found' do
+    start = Time.now
+    @win.child(opts.merge(:title => impossible)).should == nil
+    (Time.now - start).should be_within(0.05).of 0
+  end
+
+  it 'returns nil after timeout if specific child not found' do
+    start = Time.now
+    @win.child(opts.merge(:title => impossible, :timeout => 0.5)).should == nil
+    (Time.now - start).should be_within(0.05).of 0.5
+  end
+
+  it 'finds child window by class and returns it as a Window object (no timeout)' do
+    child = @win.child opts.merge(:class => class_name)
+    child.should_not == nil
+    @win.child?(child.handle).should == true
+  end
+
+  it 'finds child window by class and returns it as a Window object (with timeout)' do
+    child = @win.child opts.merge(:class => class_name, :timeout => 0.5)
+    child.should_not == nil
+    @win.child?(child.handle).should == true
+  end
+
+  it 'finds child with specific text and returns it as a Window object' do
+    with_dialog(:save) do |dialog|
+      child = dialog.child opts.merge(:title => cancel)
+      child.should_not == nil
+      dialog.child?(child.handle).should == true
+      child.get_dlg_ctrl_id.should == IDCANCEL
+
+      child = dialog.child opts.merge(:title => "&Save")
+      child.should_not == nil
+      dialog.child?(child.handle).should == true
+      child.get_dlg_ctrl_id.should == IDOK
+    end
+  end
+
+  it 'finds child control with a given ID and returns it as a Window object' do
+    with_dialog(:save) do |dialog|
+      child = dialog.child opts.merge(:id => IDCANCEL)
+      child.should_not == nil
+      dialog.child?(child.handle).should == true
+      child.text.should == "Cancel"
+    end
+  end
+end
+
 describe WinGui::Window do
   before(:each) { @win = launch_test_app.main_window }
   after(:each) { close_test_app }
@@ -147,103 +203,45 @@ describe WinGui::Window do
   describe '#child' do
     spec { use { @child = @win.child(title: "Title", class: "Class", id: 0) } }
 
-    it 'returns nil immediately if specific child not found' do
-      start = Time.now
-      @win.child(title: IMPOSSIBLE).should == nil
-      (Time.now - start).should be_within(0.05).of 0
-    end
+    context 'direct children only' do
+      let(:opts) { {} }
 
-    it 'returns nil after timeout if specific child not found' do
-      start = Time.now
-      @win.child(title: IMPOSSIBLE, timeout: 0.5).should == nil
-      (Time.now - start).should be_within(0.05).of 0.5
-    end
+      context 'with String arguments' do
+        let(:cancel) { 'Cancel' }
+        let(:class_name) { TEXTAREA_CLASS }
+        let(:impossible) { IMPOSSIBLE }
 
-    it 'finds ANY child window without args' do
-      use { @child = @win.child() }
-      @child.should_not == nil
-      @win.child?(@child.handle).should == true
-    end
+        it_should_behave_like 'child window finder'
+      end
 
-    it 'finds child window by class and returns it as a Window object (no timeout)' do
-      child = @win.child(class: TEXTAREA_CLASS)
-      child.should_not == nil
-      @win.child?(child.handle).should == true
-    end
+      context 'with Regexp arguments' do
+        let(:cancel) { /Cancel/ }
+        let(:class_name) { Regexp.new TEXTAREA_CLASS[-6..-1] }
+        let(:impossible) { Regexp.new IMPOSSIBLE }
 
-    it 'finds child window by class and returns it as a Window object (with timeout)' do
-      child = @win.child(class: TEXTAREA_CLASS, timeout: 0.5)
-      child.should_not == nil
-
-      @win.child?(child.handle).should == true
-      child = @win.child(class: STATUSBAR_CLASS, timeout: 0.5)
-      child.should_not == nil
-      @win.child?(child.handle).should == true
-    end
-
-    it 'finds child with specific text and returns it as a Window object' do
-      with_dialog(:save) do |dialog|
-        child = dialog.child(title: "Cancel")
-        child.should_not == nil
-        dialog.child?(child.handle).should == true
-        child.get_dlg_ctrl_id.should == IDCANCEL
-
-        child = dialog.child(title: "&Save")
-        child.should_not == nil
-        dialog.child?(child.handle).should == true
-        child.get_dlg_ctrl_id.should == IDOK
+        it_should_behave_like 'child window finder'
       end
     end
 
-    it 'finds child control with a given ID and returns it as a Window object' do
-      with_dialog(:save) do |dialog|
-        child = dialog.child(id: IDCANCEL)
-        child.should_not == nil
-        dialog.child?(child.handle).should == true
-        child.text.should == "Cancel"
+    context 'indirect children' do
+      let(:opts) { {:indirect => true} }
+
+      context 'with String arguments' do
+        let(:cancel) { 'Cancel' }
+        let(:class_name) { TEXTAREA_CLASS }
+        let(:impossible) { IMPOSSIBLE }
+
+        it_should_behave_like 'child window finder'
+      end
+
+      context 'with Regexp arguments' do
+        let(:cancel) { /Cancel/ }
+        let(:class_name) { Regexp.new TEXTAREA_CLASS[-6..-1] }
+        let(:impossible) { Regexp.new IMPOSSIBLE }
+
+        it_should_behave_like 'child window finder'
       end
     end
-
-    context 'indirect child' do
-      it 'returns nil if specified child not found' do
-        @win.child(title: IMPOSSIBLE, indirect: true).should == nil
-      end
-
-      it 'finds ANY child window without other args' do
-        use { @child = @win.child(indirect: true) }
-        @child.should_not == nil
-        @win.child?(@child.handle).should == true
-      end
-
-      it 'finds child window by class' do
-        child = @win.child(class: TEXTAREA_CLASS, indirect: true)
-        child.should_not == nil
-        @win.child?(child.handle).should == true
-      end
-
-      it 'finds child with specific text' do
-        with_dialog(:save) do |dialog|
-          child = dialog.child(title: "Cancel", indirect: true)
-          child.should_not == nil
-          dialog.child?(child.handle).should == true
-          child.id.should == IDCANCEL
-
-          child = dialog.child(title: "&Save", indirect: true)
-          child.should_not == nil
-          dialog.child?(child.handle).should == true
-          child.id.should == IDOK
-        end
-      end
-
-      it 'finds child control with a given ID ' do
-        with_dialog(:save) do |dialog|
-          child = dialog.child(id: IDCANCEL, indirect: true)
-          child.should_not == nil
-          dialog.child?(child.handle).should == true
-          child.text.should == "Cancel"
-        end
-      end
-    end # context indirect
   end # describe child
 
   describe '#children' do
