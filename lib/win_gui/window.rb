@@ -62,7 +62,7 @@ module WinGui
       #
       def top_level opts={}
         if opts[:class].is_a?(Regexp) or opts[:title].is_a?(Regexp)
-          lookup_window_in_collection(opts){WinGui.enum_windows}
+          lookup_window_in_collection(opts) { WinGui.enum_windows }
         else
           lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
         end
@@ -83,9 +83,11 @@ module WinGui
     #
     def child(opts={})
       if opts[:indirect]
-        self.class.lookup_window_in_collection(opts){ enum_child_windows }
+        self.class.lookup_window_in_collection(opts) { enum_child_windows }
       elsif opts[:class].is_a?(Regexp) or opts[:title].is_a?(Regexp)
-      #  self.class.lookup_window_in_collection(opts){ find_window_ex(0, nil, nil) }  # NO! it will return just one window
+        self.class.lookup_window_in_collection(opts) do
+          enum_child_windows.select { |handle| child? handle }
+        end
       else
         self.class.lookup_window opts do
           opts[:id] ? get_dlg_item(opts[:id]) : find_window_ex(0, opts[:class], opts[:title])
