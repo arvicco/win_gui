@@ -1,14 +1,8 @@
-# Gemspecs should not be generated, but edited directly.
-# Refer to: http://yehudakatz.com/2010/04/02/using-gemspecs-as-intended/
-
-lib = File.expand_path('../lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
-
 Gem::Specification.new do |gem|
   gem.name        = "win_gui"
-  gem.version     = File.open('VERSION').read.strip #::WinGui::VERSION - conflicts with Bundler
-  gem.summary     = %q{Abstractions/wrappers around GUI-related Win32 API functions}
-  gem.description = %q{Abstractions/wrappers around GUI-related Win32 API functions}
+  gem.version     = File.open('VERSION').read.strip
+  gem.summary     = %q{Work with Windows GUI in an object-oriented way}
+  gem.description = %q{Work with Windows GUI in an object-oriented way. Abstractions/wrappers around GUI-related Win32 API functions}
   gem.authors     = ["arvicco"]
   gem.email       = "arvitallian@gmail.com"
   gem.homepage    = %q{http://github.com/arvicco/win_gui}

@@ -7,7 +7,8 @@ url:: http://github.com/arvicco/win_gui
 WinGui is a module that provides higher-level abstractions/wrappers around GUI-related
 Win32 API functions. It uses Win gem as a basis, which in turn uses FFI.
 So (in theory) it should work for any Ruby implementation supporting FFI. In practice,
-it's only been tested under mingw and cygwin flavors of Ruby 1.9.1.
+it's only been tested under mingw and cygwin flavors of Ruby 1.9. Porting to JRuby is
+under way, waiting for its 1.9 compatibility to mature.
 
 == SUMMARY:
 
@@ -32,26 +33,24 @@ For example, here is how you deal with typical GUI-related tasks using Win:
   end
   close_window(window_handle)
 
-Ideally, there should be a thin wrapper class around window handle, and the code above should be more like this:
+This works fine, but such functional style is does not feel like object-oriented Ruby.
+Ideally, there should be a thin wrapper class around window handle, and the code above
+should be more like this:
+
   require 'win_gui'
   include WinGui
 
-  window = Window.find(:first, :class => 'WinClass')
+  window = Window.find(:title => /PartTitle/)
   puts window.handle, window.title, window.thread, window.process
-  window.each_child {|child| puts child.handle, child.title, child.thread, child.process }
+  window.children.each {|child| puts child.handle, child.title, child.thread, child.process }
   window.close
 
-This library will try to provide such wrappers and convenience methods that will make working with
-Windows GUI-related code much more fun than it is right now.
+WinGui library strives to provide such wrappers and convenience methods that will make
+working with Windows GUI-related code much more fun than it is right now.
 
 == REQUIREMENTS:
 
-Only works with Ruby 1.9.1+ compatible implementations since Win gem uses some of latest Ruby features.
-
-== FEATURES/PROBLEMS:
-
-This project is quite new, so it may be not suitable for production-quality systems yet.
-Contributors always welcome!
+Only works with Ruby 1.9 compatible implementations since Win gem uses some of latest Ruby features.
 
 == INSTALL:
 
