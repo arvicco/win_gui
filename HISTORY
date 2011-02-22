@@ -77,3 +77,7 @@
 == 0.2.18 / 2011-02-17
 
 * Full Regexp support for Window find operations
+
+== 0.2.19 / 2011-02-22
+
+* Command line arguments in WinGui::App.new

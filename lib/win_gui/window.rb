@@ -61,7 +61,7 @@ module WinGui
       # :raise:: raise this exception instead of returning nil if nothing found
       #
       def top_level opts={}
-        if opts[:class].is_a?(Regexp) or opts[:title].is_a?(Regexp)
+        if opts[:class].is_a?(Regexp) || opts[:title].is_a?(Regexp)
           lookup_window_in_collection(opts) { WinGui.enum_windows }
         else
           lookup_window(opts) { WinGui.find_window opts[:class], opts[:title] }
@@ -84,7 +84,7 @@ module WinGui
     def child(opts={})
       if opts[:indirect]
         self.class.lookup_window_in_collection(opts) { enum_child_windows }
-      elsif opts[:class].is_a?(Regexp) or opts[:title].is_a?(Regexp)
+      elsif opts[:class].is_a?(Regexp) || opts[:title].is_a?(Regexp)
         self.class.lookup_window_in_collection(opts) do
           enum_child_windows.select { |handle| child? handle }
         end

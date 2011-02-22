@@ -56,8 +56,9 @@ module WinGui
       def launch(opts)
         app_path = opts.delete(:path) || opts.delete(:app_path)
         dir_path = opts.delete(:dir) || opts.delete(:cd)
+        args = opts.delete(:args) || opts.delete(:argv)
 
-        launch_app app_path, dir_path
+        launch_app app_path, dir_path, args
 
         defaults = {timeout: LAUNCH_TIMEOUT,
                     raise: WinGui::Errors::InitError.new("Unable to launch App with #{opts.inspect}")}
@@ -70,10 +71,11 @@ module WinGui
         @cygwin_flag ||= RUBY_PLATFORM =~ /cygwin/
       end
 
-      def launch_app(app_path, dir_path)
+      def launch_app(app_path, dir_path, args = nil)
 
         app = cygwin? ? app_path.to_s : app_path.to_s.gsub(/\//, "\\")
         command = cygwin? ? "cmd /c start `cygpath -w #{app}`" : "start #{app}"
+        command += " #{args}" if args
 
         if dir_path
           dir = cygwin? ? dir_path.to_s : dir_path.to_s.gsub(/\//, "\\")

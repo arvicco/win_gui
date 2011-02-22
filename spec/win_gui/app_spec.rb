@@ -18,6 +18,13 @@ describe WinGui::App do
         @app.main_window.should == window
       end
 
+      it 'wraps new App around existing Window, given a Regexp' do
+        window = Window.top_level(:title => Regexp.new(WIN_TITLE))
+        @app   = App.new(window)
+        @app.should be_an App
+        @app.main_window.should == window
+      end
+
       it 'wraps new App around active window handle (of top-level Window)' do
         window = Window.top_level(title: WIN_TITLE)
         @app   = App.new(window.handle)
@@ -42,6 +49,11 @@ describe WinGui::App do
         @app.should be_an App
       end
 
+      it 'finds already launched App given valid Regexp' do
+        use { @app = App.find(:title => Regexp.new(WIN_TITLE)) }
+        @app.should be_an App
+      end
+
       it 'returns nil if asked to find App with invalid Window info' do
         App.find(title: IMPOSSIBLE).should == nil
       end
@@ -55,6 +67,11 @@ describe WinGui::App do
     context '::launch' do
       it 'launches new App given valid path and Window info' do
         use { @app = App.launch(path: APP_PATH, title: WIN_TITLE) }
+        @app.should be_an App
+      end
+
+      it 'launches new App given valid path and Regexp' do
+        use { @app = App.launch(:path => APP_PATH, :title => Regexp.new(WIN_TITLE)) }
         @app.should be_an App
       end
 
