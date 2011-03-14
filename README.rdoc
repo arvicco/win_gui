@@ -33,7 +33,7 @@ For example, here is how you deal with typical GUI-related tasks using Win:
   end
   close_window(window_handle)
 
-This works fine, but such functional style is does not feel like object-oriented Ruby.
+This works fine, but such functional style just does not feel like object-oriented Ruby.
 Ideally, there should be a thin wrapper class around window handle, and the code above
 should be more like this:
 

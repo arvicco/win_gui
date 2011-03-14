@@ -13,3 +13,4 @@ namespace :spec do
     t.rcov_opts = ['--exclude', 'spec']
   end
 end
+

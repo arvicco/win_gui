@@ -81,3 +81,7 @@
 == 0.2.19 / 2011-02-22
 
 * Command line arguments in WinGui::App.new
+
+== 0.2.20 / 2011-03-14
+
+* Win dependency updated

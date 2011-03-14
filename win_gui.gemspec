@@ -25,6 +25,6 @@ Gem::Specification.new do |gem|
   # Dependencies
   gem.add_development_dependency("rspec", [">= 1.2.9"])
   gem.add_development_dependency("cucumber", [">= 0"])
-  gem.add_dependency("win", [">= 0.3.1"])
+  gem.add_dependency("win", [">= 0.3.26"])
 end
 
