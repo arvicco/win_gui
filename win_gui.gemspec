@@ -21,10 +21,11 @@ Gem::Specification.new do |gem|
   gem.has_rdoc = true
   gem.rdoc_options.concat %W{--charset UTF-8 --main README.rdoc --title win_gui}
   gem.extra_rdoc_files = ["LICENSE", "HISTORY", "README.rdoc"]
-    
+
   # Dependencies
-  gem.add_development_dependency("rspec", [">= 1.2.9"])
-  gem.add_development_dependency("cucumber", [">= 0"])
-  gem.add_dependency("win", [">= 0.3.26"])
+  gem.add_development_dependency 'rspec', ['>= 1.2.9']
+  gem.add_development_dependency 'cucumber', ['>= 0']
+  gem.add_dependency 'bundler', ['>= 1.0.13']
+  gem.add_dependency 'win', ['>= 0.3.27']
 end
 

@@ -85,3 +85,7 @@
 == 0.2.20 / 2011-03-14
 
 * Win dependency updated
+
+== 0.2.21 / 2011-11-11
+
+* Bump win gem dependency
